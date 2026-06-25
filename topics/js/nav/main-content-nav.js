@@ -17,7 +17,6 @@ export const mainTargetDiv =
 // =========================
 // MAIN NAV ROUTER
 // =========================
-
 export function mainContentNav({ e, focusZone }) {
     const key = e.key?.toLowerCase();
     if (!key) return;
@@ -45,7 +44,8 @@ export function mainContentNav({ e, focusZone }) {
     // M KEY → RETURN TO STEP / MAIN
     // =========================
     if (key === 'm') {
-        handleMKey({ e, focusZone });
+        console.log('here')
+        // handleMKey({ e, focusZone });
         return;
     }
 

@@ -126,84 +126,6 @@ allSideBarLinks.forEach((el, i) => {
 sideBar.addEventListener('focusin', () => sideBarFocused = true);
 sideBar.addEventListener('focusout', () => sideBarFocused = false);
 
-/* =========================
-   MAIN KEYBOARD NAV
-========================= */
-export function sideBarNav({ e, focusZone }) {
-    if (focusZone !== 'sideBar') return;
-    if(e.target === sideBarBtn){
-        return
-    }
-    if (!e?.key) return;
-
-    const key = e.key.toLowerCase();
-    const activeEl = document.activeElement;
-    const visibleLinks = getVisibleLinks();
-
-    /* ---- NUMBER KEYS ---- */
-    if (!isNaN(key)) {
-        const index = parseInt(key) - 1;
-
-        if (isSubLink(activeEl)) {
-            const ul = activeEl.closest('ul');
-            const subs = [...ul.querySelectorAll('li > a')].filter(isVisible);
-            subs[index]?.focus();
-        } else {
-            visibleLinks[index]?.focus();
-        }
-        return;
-    }
-
-    /* ---- M KEY ---- */
-    if (key === 'm') {
-        handleMKey({ e, focusZone,mainTargetDiv });
-        return;
-    }
-
-    /* ---- FORWARD / BACK ---- */
-    if (key === 'f' || key === 'a') {
-        suppressIndexUpdate = true;
-
-        let current = visibleLinks.indexOf(activeEl);
-        if (current === -1) current = 0;
-
-        const delta = key === 'f'
-            ? (e.shiftKey ? -1 : 1)
-            : -1;
-
-        const next = (current + delta + visibleLinks.length) % visibleLinks.length;
-        visibleLinks[next].focus();
-        iSideBarLinks = allSideBarLinks.indexOf(visibleLinks[next]);
-
-        suppressIndexUpdate = false;
-        return;
-    }
-
-    /* ---- S KEY ---- */
-    if (key === 's') {
-        
-        if (isSubLink(activeEl)) {
-            const parent = getParentTopLink(activeEl);
-            if (parent) {
-                parent.focus();
-                iSideBarLinks = allSideBarLinks.indexOf(parent);
-                return;
-            }
-        } else {
-
-            sideBarBtn.focus();
-            return;
-        }
-        
-    }
-
-    /* ---- T KEY ---- */
-    if (key === 't') {
-        
-
-        tutorialLink?.focus();
-    }
-}
 
 /* =========================
    SIDEBAR BUTTON
@@ -240,4 +162,82 @@ function removeAllHighlights(allSideBarLinks){
             el.classList.remove('highlight')
         }
     })
+}
+/* =========================
+   MAIN KEYBOARD NAV
+========================= */
+export function sideBarNav({ e, focusZone }) {
+    if (focusZone !== 'sideBar') return;
+    if (e.target === sideBarBtn) {
+        return
+    }
+    if (!e?.key) return;
+
+    const key = e.key.toLowerCase();
+    const activeEl = document.activeElement;
+    const visibleLinks = getVisibleLinks();
+
+    /* ---- NUMBER KEYS ---- */
+    if (!isNaN(key)) {
+        const index = parseInt(key) - 1;
+
+        if (isSubLink(activeEl)) {
+            const ul = activeEl.closest('ul');
+            const subs = [...ul.querySelectorAll('li > a')].filter(isVisible);
+            subs[index]?.focus();
+        } else {
+            visibleLinks[index]?.focus();
+        }
+        return;
+    }
+
+    /* ---- M KEY ---- */
+    if (key === 'm') {
+        // handleMKey({ e, focusZone, mainTargetDiv });
+        return;
+    }
+
+    /* ---- FORWARD / BACK ---- */
+    if (key === 'f' || key === 'a') {
+        suppressIndexUpdate = true;
+
+        let current = visibleLinks.indexOf(activeEl);
+        if (current === -1) current = 0;
+
+        const delta = key === 'f'
+            ? (e.shiftKey ? -1 : 1)
+            : -1;
+
+        const next = (current + delta + visibleLinks.length) % visibleLinks.length;
+        visibleLinks[next].focus();
+        iSideBarLinks = allSideBarLinks.indexOf(visibleLinks[next]);
+
+        suppressIndexUpdate = false;
+        return;
+    }
+
+    /* ---- S KEY ---- */
+    if (key === 's') {
+
+        if (isSubLink(activeEl)) {
+            const parent = getParentTopLink(activeEl);
+            if (parent) {
+                parent.focus();
+                iSideBarLinks = allSideBarLinks.indexOf(parent);
+                return;
+            }
+        } else {
+
+            sideBarBtn.focus();
+            return;
+        }
+
+    }
+
+    /* ---- T KEY ---- */
+    if (key === 't') {
+
+
+        tutorialLink?.focus();
+    }
 }

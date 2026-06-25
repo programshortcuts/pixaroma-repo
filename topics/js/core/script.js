@@ -1,7 +1,9 @@
 // script.js
 // THIS CODE IS ALL over ThE Place, fix, make more like tech-with-tim!
 // ===== Imports =====
-import { popupLetterNav } from "../ui/letter-nav-popup.js";
+import { keyboardNav } from "../nav/keyboard-nav.js";
+
+// import { popupLetterNav } from "../ui/letter-nav-popup.js";
 import { letterNav } from "../nav/letter-nav.js";
 import { initEscapeReset } from "../ui/toggle-img-sizes.js";
 import { bindMainFocusReset } from "../ui/toggle-img-sizes.js";
@@ -51,74 +53,17 @@ function initMain() {
 
 function setupGlobalKeyListener() {
 
-    addEventListener('keydown', (e) => {
-        let focusZone = getFocusZone({ e });
-        const key = e.key.toLowerCase();
-// LETTER NAV is WORKING PERFECT, but this is awfule name for code where there is also letterFocus
-    //  BAD CODE EVERYTHWHERE
-        if (e.key === 'x' && e.shiftKey && e.metaKey) {
-            isLetterNavEnabled = !isLetterNavEnabled
-            popupLetterNav({isLetterNavEnabled})
-        }
-        
-        if(isLetterNavEnabled){
-            letterNav({e})
-            return
-        }
-        
-        const active = document.activeElement;
-        // =========================
-        // GLOBAL M KEY
-        // =========================
-        if (key === 'm') {
+    addEventListener('keydown', e => {
+        /** The e.preventDefault to if(isTyping) means: prevents bugs*/
+        if (e.defaultPrevented) return
+        const tag = e.target.tagName
+        const isTyping =
+            tag === 'INPUT' ||
+            tag === 'TEXTAREA' ||
+            e.target.isContentEditable
 
-            e.preventDefault();
-            e.stopPropagation();
+        if (isTyping) return
 
-            if (lastStep) {
-                lastStep.focus();
-            } else {
-                mainTargetDiv.focus();
-            }
-
-            return;
-        }
-        if (
-            active?.closest('#mainTargetDiv a') &&
-            key !== 'm'
-        ) {
-            return;
-        }
-
-
-        // force header override
-        const headerKeys = ['b', 'c', 'd', 'e', 'h', 'p', 'n'];
-        if (headerKeys.includes(key)) focusZone = 'header';
-
-        // main container override
-        if (e.target === mainTargetDiv) {
-            focusZone = 'mainTargetDiv';
-
-            if (key === 'enter') {
-                mainTargetDiv.querySelector('.step-float')?.focus();
-                return;
-            }
-        }
-
-        switch (focusZone) {
-
-            case 'sideBar':
-                sideBarNav({ e, focusZone });
-                break;
-
-            case 'mainTargetDiv':
-                mainContentNav({ e, focusZone });
-                break;
-
-            case 'header':
-                letterFocus({ e, focusZone });
-                break;
-        }
+        keyboardNav({ e })
     });
-    initEscapeReset()
 }

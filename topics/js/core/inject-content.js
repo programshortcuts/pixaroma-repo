@@ -112,12 +112,7 @@ export function injectContent(href) {
             if (firstStep) {
                 // firstStep.focus();
             }
-            // =========================
-            // 4. OPTIONAL CALLBACK HOOK
-            // =========================
-            if (typeof callback === "function") {
-                callback();
-            }
+            
         })
         .catch(err => {
             console.error('Failed to load content:', err);

@@ -119,34 +119,34 @@ function handleStepKey(e, step, index) {
    M KEY
 ========================= */
     if (key === 'm') {
-        e.preventDefault();
+        // e.preventDefault();
 
-        const currentStep = e.target.closest('.step-float');
-        if (!currentStep) return;
+        // const currentStep = e.target.closest('.step-float');
+        // if (!currentStep) return;
 
-        currentStep.blur();
+        // currentStep.blur();
 
-        requestAnimationFrame(() => {
-            if (!mainTargetDiv) return;
+        // requestAnimationFrame(() => {
+        //     if (!mainTargetDiv) return;
 
-            // 1. focus it (optional but fine)
-            mainTargetDiv.setAttribute('tabindex', '-1');
-            mainTargetDiv.focus?.();
+        //     // 1. focus it (optional but fine)
+        //     mainTargetDiv.setAttribute('tabindex', '-1');
+        //     mainTargetDiv.focus?.();
 
-            // 2. scroll it to top (THIS is the missing piece)
-            mainTargetDiv.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
+        //     // 2. scroll it to top (THIS is the missing piece)
+        //     mainTargetDiv.scrollIntoView({
+        //         behavior: 'smooth',
+        //         block: 'start'
+        //     });
 
-            // fallback hard reset (important if container scroll is weird)
-            setTimeout(() => {
-                mainTargetDiv.scrollTop = 0;
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }, 0);
-        });
+        //     // fallback hard reset (important if container scroll is weird)
+        //     setTimeout(() => {
+        //         mainTargetDiv.scrollTop = 0;
+        //         window.scrollTo({ top: 0, behavior: 'smooth' });
+        //     }, 0);
+        // });
 
-        return;
+        // return;
     }
 }
 
@@ -178,7 +178,7 @@ document.addEventListener('keydown', (e) => {
         ];
 
         const currentCodeIndex =
-            copyCodes.indexOf(activeCopyCode);
+            copyCodes?.indexOf(activeCopyCode);
         if(!isNaN(key)){
             const intKey = parseInt(key)    
             copyCodes[intKey - 1].focus()

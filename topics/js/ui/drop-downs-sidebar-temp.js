@@ -12,9 +12,7 @@ export function initDropDowns() {
         // --- Handle keyboard activation ---
         if (e.type === "keydown") {
             const key = e.key.toLowerCase()
-            if(key === 'm'){
-                mainTargetDiv.focus()
-            }
+            
             const dropdown =
                 e.target.classList.contains("drop-down")
                     ? e.target
