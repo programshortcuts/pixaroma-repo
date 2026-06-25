@@ -17,6 +17,8 @@
 }
 .resource {
     border: 1px solid black;
+    flex-basis: 30%;
+    width: 50%;
 }
 .sub-topics-container > .drop-topic{
     border: none;
