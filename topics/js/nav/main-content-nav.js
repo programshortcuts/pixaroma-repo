@@ -18,7 +18,6 @@ export const mainTargetDiv = document.querySelector('#mainTargetDiv');
 // MAIN NAV ROUTER
 // =========================
 export function mainContentNav({ e, focusZone }) {
-    console.log(e.target)
     const key = e.key?.toLowerCase();
     if (key === 'enter' && e.target == mainTargetDiv){
         const step = mainContainer.querySelector('.step-float')
@@ -44,12 +43,10 @@ export function mainContentNav({ e, focusZone }) {
     if (isMedia && key !== 't') {
         return;
     }
-
     // =========================
     // M KEY → RETURN TO STEP / MAIN
     // =========================
     if (key === 'm') {
-        console.log('here')
         handleMKey({ e, focusZone });
         return;
     }

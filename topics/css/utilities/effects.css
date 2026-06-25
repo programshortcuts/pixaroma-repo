@@ -8,7 +8,8 @@
 }
 .copy-code:active,.copy-code:focus{
     box-shadow: 2px 2px 10px lightblue;
-    /* background-color: rgb(144, 126, 126); */
+    background-color: rgb(165, 159, 159);
+    border: 3px solid green !important;
     padding: 1%;
     margin-top: -1%;
     margin-bottom: 5%;

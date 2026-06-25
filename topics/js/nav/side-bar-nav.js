@@ -101,7 +101,9 @@ allSideBarLinks.forEach((el, i) => {
 
         if (key === 'm') {
             
-            handleMKey({ e, focusZone: mainTargetDiv });
+            if (e.key.toLowerCase() === 'm') {
+                mainTargetDiv.focus();
+            }
             return
         }
     });

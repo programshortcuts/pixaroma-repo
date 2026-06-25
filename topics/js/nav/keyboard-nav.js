@@ -1,4 +1,5 @@
 import { handleMKey } from "./m-key-handler.js"
+
 import { popupLetterNav } from "../ui/letter-nav-popup.js"
 import { initEscapeReset } from "../ui/toggle-img-sizes.js"
 import { letterFocus } from "./letter-focus.js"
@@ -23,23 +24,23 @@ export function keyboardNav({e}) {
         return;
     }    
     // LETTER NAV is WORKING PERFECT, but this is awfule name for code where there is also letterFocus
-    // if (key == 'x' && e.shiftKey && e.metaKey) {
-    //     isLetterNavEnabled = !isLetterNavEnabled
-    //     popupLetterNav({ e, navState })
-    //     popupLetterNav.innerText = `letter navigation : ${isLetterNavEnabled}`
-    //     popupLetterNav.classList.add('animate')
-    //     document.querySelector('.page-wrapper').classList.toggle('nav-mode-colors')
-    //     setTimeout(() => {
-    //         popupLetterNav.classList.remove('animate')
-    //         console.log('remove')
-    //     }, 1000);
+    if (key == 'x' && e.shiftKey && e.metaKey) {
+        isLetterNavEnabled = !isLetterNavEnabled
+        popupLetterNav({ e, navState })
+        popupLetterNav.innerText = `letter navigation : ${isLetterNavEnabled}`
+        popupLetterNav.classList.add('animate')
+        document.querySelector('.page-wrapper').classList.toggle('nav-mode-colors')
+        setTimeout(() => {
+            popupLetterNav.classList.remove('animate')
+            console.log('remove')
+        }, 1000);
 
-    //     return
-    // }
-    // if (isLetterNavEnabled) {
-    //     letterNav({ e: e })
-    //     return
-    // }
+        return
+    }
+    if (isLetterNavEnabled) {
+        letterFocus({ e: e })
+        return
+    }
     const active = document.activeElement;
     // force header override
     const headerKeys = ['b', 'c', 'd', 'e', 'h', 'p', 'n'];
@@ -56,7 +57,6 @@ export function keyboardNav({e}) {
     //     }
     // }
     focusZone = navState.zone
-    console.log(focusZone)
     switch (focusZone) {
         case 'sideBar':
             sideBarNav({ e, focusZone });

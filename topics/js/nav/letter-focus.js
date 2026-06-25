@@ -27,27 +27,6 @@ export function letterFocus({ e, focusZone }) {
             id !== 'targetheaderh3'
         );
     });
-// SPECIAL CASES for mainTargetDiv and sideBar in side-bar-nav.js and main-content-nav.js
-    // if (focusZone === 'mainTargetDiv'){
-        
-    //     if (key === 'm' ) {
-    //         handleMKey({e,focusZone});
-    //         // console.log('here')
-    //         return;
-    //         // console.log('letter-focus.js')
-    //     }
-    // }
-    // if(key === 's'){
-    //     if(focusZone === 'mainTargetDiv'){
-    //         if(mainContainer.classList.contains('collapsed')){
-    //             sideBarBtn.focus()
-    //         }
-    //         return 
-    //     }
-    //     if(focusZone === 'sideBar'){
-    //         return 
-    //     }
-    // }
     if (matching.length === 0) return;
     const activeEl = document.activeElement;
     const activeIndex = matching.indexOf(activeEl);
