@@ -1,3 +1,4 @@
+import { handleMKey } from "./m-key-handler.js"
 import { popupLetterNav } from "../ui/letter-nav-popup.js"
 import { initEscapeReset } from "../ui/toggle-img-sizes.js"
 import { letterFocus } from "./letter-focus.js"
@@ -16,7 +17,11 @@ export function keyboardNav({e}) {
     let focusZone    
     
     const key = e.key.toLowerCase();
-    
+    if (key === 'm') {
+        e.preventDefault();
+        handleMKey();
+        return;
+    }    
     // LETTER NAV is WORKING PERFECT, but this is awfule name for code where there is also letterFocus
     // if (key == 'x' && e.shiftKey && e.metaKey) {
     //     isLetterNavEnabled = !isLetterNavEnabled
@@ -60,7 +65,7 @@ export function keyboardNav({e}) {
             mainContentNav({ e, focusZone });
             break;
         case 'header':
-            // letterFocus({ e, focusZone });
+            letterFocus({ e, focusZone });
             break;
     }
 

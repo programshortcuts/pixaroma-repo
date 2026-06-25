@@ -11,14 +11,19 @@ import {
 import { lastClickedSideBarLink } from "./side-bar-nav.js";
 import { nxtBtn, prevBtn } from "../core/inject-content.js";
 
-export const mainTargetDiv =
-    document.querySelector('#mainTargetDiv');
+export const mainTargetDiv = document.querySelector('#mainTargetDiv');
+// export initMainTargetDiv
 
 // =========================
 // MAIN NAV ROUTER
 // =========================
 export function mainContentNav({ e, focusZone }) {
+    console.log(e.target)
     const key = e.key?.toLowerCase();
+    if (key === 'enter' && e.target == mainTargetDiv){
+        const step = mainContainer.querySelector('.step-float')
+        step.focus()
+    }
     if (!key) return;
     const active = document.activeElement;
 
@@ -45,7 +50,7 @@ export function mainContentNav({ e, focusZone }) {
     // =========================
     if (key === 'm') {
         console.log('here')
-        // handleMKey({ e, focusZone });
+        handleMKey({ e, focusZone });
         return;
     }
 

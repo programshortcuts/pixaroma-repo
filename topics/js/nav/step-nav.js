@@ -119,6 +119,7 @@ function handleStepKey(e, step, index) {
    M KEY
 ========================= */
     if (key === 'm') {
+        
         // e.preventDefault();
 
         // const currentStep = e.target.closest('.step-float');
@@ -181,7 +182,7 @@ document.addEventListener('keydown', (e) => {
             copyCodes?.indexOf(activeCopyCode);
         if(!isNaN(key)){
             const intKey = parseInt(key)    
-            copyCodes[intKey - 1].focus()
+            copyCodes[intKey - 1]?.focus()
         }
         if (key === 'f') {
             e.preventDefault();

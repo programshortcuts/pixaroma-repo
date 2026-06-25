@@ -1,38 +1,55 @@
 // m-key-handler.js
-import { lastStep } from "./step-nav.js";
+// m-key-handler.js
 import { mainTargetDiv } from "./main-content-nav.js";
+import { lastStep } from "./step-nav.js";
 
-export function handleMKey({ e, focusZone }) {
-    e.preventDefault();
-    e.stopPropagation();
+export function handleMKey() {
 
     const active = document.activeElement;
 
-    if (focusZone !== 'mainTargetDiv') {
-        if (lastStep && document.contains(lastStep)) {
+    const activeStep =
+        active?.closest?.('.step-float');
+
+    // CASE 1
+    // child inside step
+    if (
+        activeStep &&
+        active !== activeStep
+    ) {
+        activeStep.focus();
+        return;
+    }
+
+    // CASE 2
+    // step -> mainTargetDiv
+    if (activeStep) {
+        mainTargetDiv.focus();
+        return;
+    }
+
+    // CASE 3
+    // mainTargetDiv -> step
+    if (active === mainTargetDiv) {
+        if (lastStep) {
             lastStep.focus();
-        } else if (mainTargetDiv && document.contains(mainTargetDiv)) {
-            mainTargetDiv.focus();
+            return;
         }
+
+        mainTargetDiv
+            .querySelector('.step-float')
+            ?.focus();
+
         return;
     }
 
-    if (active?.closest('.step-float')) {
-        mainTargetDiv?.focus();
-        return;
-    }
-
-    if (active === mainTargetDiv || active?.closest('#mainTargetDiv')) {
-        if (lastStep && document.contains(lastStep)) {
-            lastStep.focus();
-        }
-        return;
-    }
-
-    if (lastStep && document.contains(lastStep)) {
+    // CASE 4
+    // anywhere else
+    if (lastStep) {
         lastStep.focus();
         return;
     }
 
-    // mainTargetDiv?.focus();
+    mainTargetDiv
+        .querySelector('.step-float')
+        ?.focus();
 }
