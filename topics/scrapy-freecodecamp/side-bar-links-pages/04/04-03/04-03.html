@@ -1,0 +1,90 @@
+<!-- 04-03.html -->
+<div id="targetDiv">
+    <header>
+        <h3 id="">04-03 scrapy shell css selectors</h3>
+    </header>
+    <div class="steps-container">
+        <!-- 1. -->
+        <div  tabindex="0" class="step-float" data-video="https://www.youtube.com/watch?v=mBoX_JCKZTE"
+            data-timestamp="1996">
+            <h4>1</h4>
+            
+            <div class="step-img">
+                <img loading="lazy" src="side-bar-links-pages/04/04-03/images/01.png" alt="">
+            </div>
+            <div class="step-txt ">
+                <p>
+                    He installs <code>ipython</code> shell
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+pip install ipython</code>
+                </div>
+                <p>
+                    Then go into <code>scrapy.cfg</code> and add 
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+shell = ipython</code>
+                </div>
+                <p>
+                    under <code>[settings]</code>
+                </p>
+            </div>
+        </div>
+        <!-- 2. -->
+        <div  tabindex="0" class="step-float" data-video="https://www.youtube.com/watch?v=mBoX_JCKZTE"
+            data-timestamp="2056">
+            <h4>2</h4>
+            
+            <div class="step-vid ">
+                <video preload="none" playsinline webkit-playsinline poster="side-bar-links-pages/04/04-03/images/02.png"
+                src="side-bar-links-pages/04/04-03/images/02.mov"></video>
+                <div class="vid-cntrl-btns">
+                    <button class="fwdBtn">&lt;&lt;</button>
+                    <button class="playbtn">></button>
+                    <button class="rwdBtn">>></button>
+                </div>
+            </div>
+            <div class="step-txt ">
+                <p>
+                 Now run scrapy shell
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+scrapy shell</code>
+                </div>
+                <p>
+                    the commands are listed when shell starts
+                </p>
+            </div>
+        </div>
+        <!-- 3. -->
+        <div  tabindex="0" class="step-float" data-video="https://www.youtube.com/watch?v=mBoX_JCKZTE"
+            data-timestamp="2073">
+            <h4>3</h4>
+            <div class="step-img">
+                <img loading="lazy" src="side-bar-links-pages/04/04-03/images/03.png" alt="">
+            </div>
+            <div class="step-txt ">
+                <p>
+                 Use the <code>fetch()</code> command in shell to start selecting html elements from site,
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+fetch('https://books.toscrape.com/')</code>
+                </div>
+                <p>
+                    We get a <code class="b">200</code> response if it works
+                    and it places the html page into a <code class="b">response</code>
+                    variable , we use <span class="g">css selectors</span> on response to get data, 
+                    <span class="g">(see nxt lesson)</span>
+                </p>
+
+            </div>
+        </div>
+
+
+
+    </div>
+</div>

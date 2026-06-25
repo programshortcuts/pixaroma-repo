@@ -1,0 +1,95 @@
+/* toggle-img-sizes.css */
+/* =========================
+   BASE MEDIA BEHAVIOR
+========================= */
+.step-img,
+.step-vid {
+    position: relative;
+    pointer-events: auto;
+    transition: transform 0.1s ease,
+        opacity 0.1s ease;
+    touch-action: manipulation;
+}
+/* =========================
+   ENLARGED STATE (FOCUS MODE)
+========================= */
+.step-img.enlarge{
+        transform: translate(-50%, -50%) scale(1.05);
+}
+.step-img.enlarge,
+.step-vid.enlarge {
+    position: fixed !important;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1.05);
+    z-index: 8000 !important;
+    max-width: 90vw;
+    max-height: 90vh;
+    width: auto !important;
+    height: auto !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.85);
+    padding: 8px;
+    border-radius: 6px;
+}
+
+/* media inside enlarged state */
+.step-img.enlarge img,
+.step-vid.enlarge video {
+    max-width: 90vw;
+    max-height: 90vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+}
+
+/* ensure media fills normal layout */
+.step-img img,
+.step-vid video {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* =========================
+   OPTIONAL: DARK BACKDROP EFFECT
+   (only visual, no logic)
+========================= */
+.step-img.enlarge::before,
+.step-vid.enlarge::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: -1;
+}
+/* =========================
+   SAFETY: prevent sidebar stacking issues
+========================= */
+.step-img.enlarge,
+.step-vid.enlarge {
+    isolation: isolate;
+}
+.step-vid.enlarge {
+    position: fixed !important;
+    z-index: 8000 !important;
+    display: flex;
+    flex-direction: column;
+    width: min(90vw, 900px) !important;
+    max-width: min(90vw, 900px) !important;
+    height: auto;
+    transform: translate(-50%, -50%) scale(1.05) !important;
+}
+
+.step-float > .step-vid.enlarge,
+.imgs-container > .step-vid.enlarge {
+    width: min(90vw, 900px) !important;
+    max-width: min(90vw, 900px) !important;
+    transform: translate(-50%, -50%) scale(1.05) !important;
+}
+.step-vid.enlarge video {
+    pointer-events: none;
+        /* touch-action: none; */
+}

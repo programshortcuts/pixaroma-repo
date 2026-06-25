@@ -1,0 +1,37 @@
+.nav-mode-colors {
+    background: rgb(93, 104, 125);
+}
+
+.nav-mode-colors a {
+    color: whitesmoke !important;
+}
+
+/* letter-nav-popups.css */
+#popElLetterNav {
+    display: inline-block;
+    position: absolute;
+    color: blue;
+    z-index: 99999;
+    font-weight: 99;
+    font-size: bold;
+    text-shadow: 0 0 2px white;
+    font-family: monospace;
+    opacity: 0;
+    font-size: 150%;
+    transition: opacity 500ms;
+    /* top: 0vh; */
+    bottom: 10vh;
+    left: 0;
+}
+
+#popElLetterNav.animate {
+    opacity: 1;
+    transition: opacity 400ms;
+    position: fixed;
+    /* top: 0; */
+}
+
+.dark-mode #popElLetterNav.animate {
+    color: limegreen;
+
+}

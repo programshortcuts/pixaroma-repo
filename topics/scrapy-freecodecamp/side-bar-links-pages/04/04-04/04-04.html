@@ -1,0 +1,97 @@
+<!-- 04-04.html -->
+<div id="targetDiv">
+    <header>
+        <h3 >04-04 css selectors in scrapy shell</h3>
+    </header>
+    <div class="steps-container">
+        <!-- 1. -->
+        <div tabindex="0" class="step-float" data-video="https://www.youtube.com/watch?v=mBoX_JCKZTE" data-timestamp="2132">
+            <h4>1</h4>
+            <div class="step-img">
+                <img loading="lazy" src="side-bar-links-pages/04/04-04/images/01.png" alt="">
+            </div>
+            <div class="step-txt ">
+                <p>
+                    Start shell, run fetch to get this html into the <code class="b">response</code>
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+        fetch('https://books.toscrape.com/')</code>
+                </div>
+                <p>
+                    We get a <code class="b">200</code> response if it works
+                    and it places the html page into a <code class="b">response</code>
+                    we can use css selectos on
+                </p>
+            </div>
+        </div>
+        <!-- 2. -->
+        <div tabindex="0" class="step-float" data-video="https://www.youtube.com/watch?v=mBoX_JCKZTE" data-timestamp="2160">
+            <h4>2</h4>
+            <div class="step-img">
+                <img loading="lazy" src="side-bar-links-pages/04/04-04/images/02.png" alt="">
+            </div>
+            <div class="step-txt ">
+                <p>
+                    use css selectors on response
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+<span class="b">response</span>.<span class="g">css(</span>'article.product_pod'<span class="g">)</span></code>
+                </div>
+                
+            </div>
+        </div>
+        <!-- 3. -->
+        <div tabindex="0" class="step-float" data-video="https://www.youtube.com/watch?v=mBoX_JCKZTE" data-timestamp="2185">
+            <h4>3</h4>
+            <div class="step-img">
+                <img loading="lazy" src="side-bar-links-pages/04/04-04/images/03.png" alt="">
+            </div>
+            <div class="step-txt ">
+                <p>
+                    Adding the <code class="m">get()</code> method , gets the first <code>article.product_pod</code>, 
+                    (to me, akin to <code>querySelector()</code> js  )
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+response.css('article.product_pod').<span class="m">get()</span></code>
+                </div>
+                
+            </div>
+        </div>
+        <!-- 4. -->
+        <div tabindex="0" class="step-float" data-video="https://www.youtube.com/watch?v=mBoX_JCKZTE" 
+            data-timestamp="2200">
+            <div class="step-img">
+                <img loading="lazy" src="side-bar-links-pages/04/04-04/images/04.png" alt="">
+            </div>
+            <h4>4</h4>
+            <div class="step-txt ">
+                <p>
+                    Put results in variables
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+books = response.css('article.product_pod')</code>
+                </div>
+                <p>
+                    You can check by running <code class="gr">len()</code> as well
+                </p>
+                <p>
+                    And you can get first book
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+book = books[0]</code>
+                </div>
+                <p>
+                    or (maybe) it's a little different, has more html, as you can see in the screenshot
+                </p>
+book =response.css('article.product_pod').get()
+                
+                
+            </div>
+        </div>
+    </div>
+</div>

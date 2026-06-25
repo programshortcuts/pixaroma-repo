@@ -1,0 +1,70 @@
+:root {
+    --sidebar-width: 120px;
+    --main-content-width: calc(100% - var(--sidebar-width));
+}
+.side-bar {
+    width: var(--sidebar-width);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    /* sticks below header if header has height */
+    flex-shrink: 0;
+    /* overflow: hidden; */
+    /* height: calc(100vh - var(--header-height, 80px)); */
+}
+.side-bar a.topic{
+    text-decoration: none;    
+}
+.side-bar h3{
+    border-bottom: 1px solid blue;
+    width: 50%;
+    
+}
+
+#sideBarBtn {
+    position: absolute;
+    top: 0px;
+    /* always stays above bottom edge */
+    left: 5px;
+    /* always at left edge */
+    z-index: 9999;
+    pointer-events: auto;
+    /* make sure it's above other stuff */
+}
+
+.side-bar ul>li>a {
+    text-decoration: none;
+}
+.side-bar h3 {
+    margin-bottom: 5%;
+    margin-top: 15%;
+    /* margin-top: 20%; */
+}
+
+ol.side-bar-links {
+    list-style-type: none;
+}
+.side-bar-links {
+    margin-top: 20%;
+    padding-left: 0%;
+    margin-left: 5%;
+}
+
+.side-bar-links>li {
+    margin-bottom: 10%;
+}
+
+.side-bar-links>li>ul,
+.side-bar-links>li>ol {
+    margin-left: 15%;
+    list-style: num;
+}
+
+.side-bar-links>li>ul>li,
+.side-bar-links>li>ol>li {
+    margin: 10% 0;
+}
+
+.side-bar ul>li>a {
+    display: inline-block;
+}

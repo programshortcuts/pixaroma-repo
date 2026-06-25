@@ -1,0 +1,44 @@
+.box a{
+    padding-left: 2%;
+    padding-top: 1%;
+}
+
+.main-container{
+    padding-bottom: 7.5%;
+}
+.steps-container{
+
+    /* margin-left: 2%; */
+}
+.step-float {
+    margin: 1%;
+    padding: 2%;
+    
+}
+.step-content p {
+    padding: 1% 2%;
+    line-height: 1.4;
+}
+
+.step-content>ul {
+    padding: 2% 0;
+    /* border: 1px solid red; */
+    padding-left: 20%;
+}
+.step-float ul,
+.step-float ol {
+    margin: 0 5%;
+}
+.imgs-container {
+    gap: 5%;
+}
+
+.step-txt p{
+    margin-bottom: 2%;  
+    padding-top: 2%;
+    line-height: 1.5;
+}
+
+.code-container{
+    margin-bottom: 2%;
+}

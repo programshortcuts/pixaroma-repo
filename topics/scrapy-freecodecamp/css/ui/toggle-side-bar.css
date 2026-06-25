@@ -1,0 +1,39 @@
+/* toggle-side-bar.css */
+:root {
+  --sidebar-collapsed-width: 2.5%;
+}
+main.main-container.collapsed .side-bar {
+  width: var(--sidebar-collapsed-width)
+}
+main.main-container.collapsed .main-content-container {
+  flex-basis: 95%;
+  flex-grow: 1;
+  /* background-color: blue; */
+}
+main.main-container.collapsed .side-bar h3,
+main.main-container.collapsed .side-bar .sidebar-links-ul {
+  display: none;
+}
+
+
+/* When main-container is collapsed, adjust its left position */
+
+main.main-container.collapsed #sideBarBtn {
+  max-height: fit-content;
+  position: absolute;
+  /* reset top */
+  /* top: auto; */
+  /* now bottom works */
+  top: 76%;
+  left: 2.5%;
+  margin-left: 70%;
+  transform: scale(1.8);
+  left: 0px;
+  z-index: 9999 !important;
+  /* keep it above everything */
+  /* keep it bottom-left of screen */
+}
+
+main.main-container.collapsed .side-bar-links-container {
+  opacity: 0;
+}

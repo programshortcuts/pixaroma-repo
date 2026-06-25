@@ -1,0 +1,33 @@
+/* position.css */
+.body{
+    position: relative;
+}
+.box.tutorialLink-darkModeBtn-container{
+    position: fixed !important;
+    top: 0;
+    right: 0;
+    max-width: 200px !important;
+}
+.box.tutorialLink-darkModeBtn-container {
+    z-index: 9998
+}
+.side-bar {
+    z-index: inherit
+}
+.lesson-btns-container {
+    position: fixed;
+    bottom: 0;
+    left: 20%;
+    z-index: 2;
+}
+/* Default step images */
+.step-float > .step-vid,
+.step-float > .step-img {
+    position: relative;
+    float: right;
+   
+}
+
+.clear {
+    clear: both;
+}

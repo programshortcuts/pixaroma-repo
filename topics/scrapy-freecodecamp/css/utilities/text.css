@@ -1,0 +1,17 @@
+*{
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    word-spacing: 2px;
+    font-size: 1rem;
+}
+.page-header.grid .box a {
+    text-decoration: none;
+}
+
+.step-txt p{
+    font-family: monospace;
+    font-size: .8rem;
+}
+
+.drop-down{
+    text-decoration: none;
+}

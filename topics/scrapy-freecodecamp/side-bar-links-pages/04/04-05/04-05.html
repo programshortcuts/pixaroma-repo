@@ -1,0 +1,92 @@
+<!-- 04-05.html -->
+<div id="targetDiv">
+    <header>
+        <h3 >04-05 <span class="g">css selectors</span> nxt page link url</h3>
+    </header>
+    <div class="steps-container">
+        <!-- 1. -->
+        <div tabindex="0" class="step-float" data-video="https://www.youtube.com/watch?v=mBoX_JCKZTE" 
+        data-timestamp="2295">
+            <h4>1</h4>
+            <div class="step-txt ">
+                <p>
+                    get books then frist book
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+books = response.css('article.product_pod')</code>
+                </div>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+book = books[0]</code>
+                </div>
+                <p>
+                    Test getting stuff from all on one books, first 
+                    get title
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+book.css('h3 a::test').get()</code>
+                </div>
+                <p>
+                    Get Price
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+book.css('.product_price .price_color::text').get()</code>
+                </div>
+                
+                
+                
+                
+                
+        
+        
+            </div>
+            <div class="imgs-container">
+                <div class="step-img">
+                    <img loading="lazy" src="side-bar-links-pages/04/04-05/images/01.png" alt="">
+                </div>
+                <div class="step-img">
+                    <img loading="lazy" src="side-bar-links-pages/04/04-05/images/01-b.png" alt="">
+                </div>
+            </div>
+        </div>
+        <!-- 2. -->
+        <div tabindex="0" class="step-float" data-video="https://www.youtube.com/watch?v=mBoX_JCKZTE" 
+        data-timestamp="2402">
+            <h4>1</h4>
+            <div class="step-vid ">
+                <video preload="none" playsinline webkit-playsinline poster="side-bar-links-pages/04/04-05/images/02.png"
+                src="side-bar-links-pages/04/04-05/images/02.mov"></video>
+                <div class="vid-cntrl-btns">
+                    <button class="fwdBtn">&lt;&lt;</button>
+                    <button class="playbtn">></button>
+                    <button class="rwdBtn">>></button>
+                </div>
+            </div>
+            <div class="step-txt ">
+                <p>
+                    We want to get the link that open the page of the products,
+                </p>
+                <p>
+                    The a href link is also on the <code class="g">('h3 a')</code>
+                    but we want <code >.<span class="m">attrib</span>[<span class="g">'href'</span>] </code>
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+book.css('h3 a').<span class="m">attrib</span>[<span class="g">'href'</span>]</code>
+                </div>
+                
+            </div>
+            <div class="imgs-container">
+                <div class="step-img">
+                    <img loading="lazy" src="side-bar-links-pages/04/04-05/images/02-b.png" alt="">
+                </div>
+                
+            </div>
+            
+        </div>
+        
+    </div>
+</div>
