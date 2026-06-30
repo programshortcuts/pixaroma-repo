@@ -45,10 +45,7 @@ export function keyboardNav({e}) {
     // force header override
     const headerKeys = ['b', 'c', 'd', 'e', 'h', 'p', 'n'];
     if (headerKeys.includes(key)) navState.zone = 'header';
-    
-    
     // main container override
-    
     // if (e.target === mainTargetDiv) {
     //     navState.zone = 'mainTargetDiv';
     //     if (key === 'enter') {

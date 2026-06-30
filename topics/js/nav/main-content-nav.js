@@ -19,9 +19,12 @@ export const mainTargetDiv = document.querySelector('#mainTargetDiv');
 // =========================
 export function mainContentNav({ e, focusZone }) {
     const key = e.key?.toLowerCase();
-    if (key === 'enter' && e.target == mainTargetDiv){
+    if (key === 'enter' && e.target == mainTargetDiv ||
+        key === 'f' && e.target == mainTargetDiv 
+    ){
         const step = mainContainer.querySelector('.step-float')
         step.focus()
+        step.scrollIntoView({ behavior: "smooth", block: "start", inline: 'nearest' });
     }
     if (!key) return;
     const active = document.activeElement;

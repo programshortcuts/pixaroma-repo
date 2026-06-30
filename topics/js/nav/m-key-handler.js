@@ -5,28 +5,29 @@ import { lastStep } from "./step-nav.js";
 export function handleMKey() {
     console.log('here')
     const active = document.activeElement;
-
+    const sideBarLinks = active.closest('.side-bar-links')
+    if(sideBarLinks){
+        console.log('side')
+        if(active.classList.contains('highlight')) active.classList.remove('highlight')
+        mainTargetDiv.focus()
+        return
+    }
+    
     const activeStep = active?.closest?.('.step-float');
     if(activeStep){
         // CASE 1
         // child inside step
-        if (
-            activeStep &&
-            active !== activeStep
-        ) {
+        if (activeStep && active !== activeStep) {
             activeStep.focus();
             return;
         }
-
         // CASE 2
         // step -> mainTargetDiv
-        if (activeStep) {
+        if (activeStep || active.id == 'tutorialLink') {
             mainTargetDiv.focus();
-            mainTargetDiv.scrollIntoView({behavior:'smooth',inline:'start'})
-            
+            mainTargetDiv.scrollIntoView({behavior:'smooth',inline:'start'})   
             return;
         }
-
         // CASE 3
         // mainTargetDiv -> step
         if (active === mainTargetDiv) {
@@ -41,6 +42,7 @@ export function handleMKey() {
 
             return;
         }
+        
 
     }
     // CASE 4

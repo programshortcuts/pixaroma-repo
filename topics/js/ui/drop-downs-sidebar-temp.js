@@ -5,59 +5,45 @@ export function initDropDowns() {
     document.addEventListener("keydown", handleToggle);
     hideTopicSnips()
     function handleToggle(e) {
-        let link;
-        
-        
-        // console.log(typeof(e.key.toLowerCase()))
-        // --- Handle keyboard activation ---
-        if (e.type === "keydown") {
-            const key = e.key.toLowerCase()
-            
-            const dropdown =
-                e.target.classList.contains("drop-down")
-                    ? e.target
-                    : null;
+        let link = null;
 
-            if (
-                dropdown &&
-                (e.key === "Enter" || e.key === " ")
-            ) {
-
-                e.preventDefault();
-
-                link = dropdown;
-
-            } else {
-                return;
-            }
+        if (e.type === "click") {
+            link = e.target.closest(".drop-down");
         }
 
-        // --- Handle mouse click activation ---
-        if (e.type === "click") {
-            const clicked = e.target.closest(".drop-down");
-            if (!clicked) return; // ignore clicks not on .drop-down links
-            e.preventDefault();
-            link = clicked;
+        if (
+            e.type === "keydown" &&
+            (e.key === "Enter" || e.key === " ")
+        ) {
+            link = e.target.closest(".drop-down");
         }
 
         if (!link) return;
 
-        // Find the <li> containing this .drop-down link
-        const parentLi = link.closest("li");
-        if (!parentLi) return;
+        e.preventDefault();
 
-        // Find the nested .drop-snips *inside that li only*
-        const nestedList = parentLi.querySelector(":scope > .drop-snips");
+        const nestedList = link
+            .closest("li")
+            ?.querySelector(":scope > .drop-snips");
+
         if (!nestedList) return;
 
-        // Toggle visibility
-        nestedList.classList.toggle("hide");
+        const wasHidden = nestedList.classList.contains("hide");
+
+        hideTopicSnips();
+
+        if (wasHidden) {
+            nestedList.classList.remove("hide");
+        } else {
+            nestedList.classList.add("hide");
+        }
     }
 }
 
 export function hideTopicSnips() {
     document.querySelectorAll(".side-bar-links > li .drop-snips").forEach(el => {
         if (!el.classList.contains("show") ) {
+            el.classList.remove("show")
             el.classList.add("hide");
         }
     });
