@@ -65,6 +65,6 @@ ol.side-bar-links {
     margin: 10% 0;
 }
 
-.side-bar ul>li>a {
+.side-bar a {
     display: inline-block;
 }
