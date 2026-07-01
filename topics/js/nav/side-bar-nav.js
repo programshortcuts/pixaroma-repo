@@ -31,16 +31,29 @@ export function getHrefFromLink(link) {
 /* =========================
    INITIAL LOAD
 ========================= */
-export function intiSideBarLinkAutoFocus(){
+export async function intiSideBarLinkAutoFocus() {
     const autoLink = getAllSideBarLinks().find(el => el.hasAttribute('autofocus'));
-    if (autoLink) {
-        lastClickedSideBarLink = autoLink;
-        lastFocusedSideBarLink = autoLink;
-        injectContent(autoLink.href);
-        changeTutorialLink(autoLink)
-    } else {
+
+    if (!autoLink) {
         injectContent('home-page.html');
+        return;
     }
+
+    lastClickedSideBarLink = autoLink;
+    lastFocusedSideBarLink = autoLink;
+
+    await injectContent(autoLink.href);
+
+    // ✅ IMPORTANT: run AFTER DOM exists
+    changeTutorialLink(autoLink);
+
+    // 🔥 NEW: force sync with first step in loaded content
+    requestAnimationFrame(() => {
+        const firstStep = mainTargetDiv.querySelector('.step-float');
+        if (firstStep) {
+            changeTutorialLink(firstStep);
+        }
+    });
 }
 /* =========================
    HELPERS
