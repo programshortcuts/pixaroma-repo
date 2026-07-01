@@ -2,7 +2,7 @@
 export const tutorialLink = document.querySelector('#tutorialLink');
 export function changeTutorialLink(source) {
     if (!tutorialLink) return null;
-
+    
     // If an event was passed, use its target.
     const el = source?.target || source;
 
@@ -19,6 +19,6 @@ export function changeTutorialLink(source) {
     tutorialLink.href = ts
         ? `${vidBase}${vidBase.includes('?') ? '&' : '?'}t=${ts}s`
         : vidBase;
-
+    console.log(tutorialLink)
     return tutorialLink;
 }
