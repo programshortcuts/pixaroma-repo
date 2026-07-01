@@ -27,4 +27,5 @@ export function changeTutorialLink(source) {
     tutorialLink.href = ts
         ? `${vidBase}&t=${ts}s`
         : vidBase;
+    console.log(tutorialLink)
 }

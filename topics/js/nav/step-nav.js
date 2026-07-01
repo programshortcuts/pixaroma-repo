@@ -89,7 +89,7 @@ function handleStepKey(e, step, index) {
         //         return;
         //     }
         // }
-
+        changeTutorialLink(step)
         cycleMedia(step);
     }
 }
