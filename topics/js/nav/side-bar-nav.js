@@ -66,7 +66,7 @@ allSideBarLinks.forEach((el, i) => {
         e.preventDefault();
         lastClickedSideBarLink = el;
         injectContent(el.href);
-        changeTutorialLink(e);
+        changeTutorialLink(el);
     });
     // ENTER
     el.addEventListener('keydown', e => {
@@ -74,7 +74,7 @@ allSideBarLinks.forEach((el, i) => {
         
         if (key === 'enter') {
             e.preventDefault();
-            changeTutorialLink(e);
+            changeTutorialLink(el);
             if (lastFocusedSideBarLink == lastClickedSideBarLink &&
                 !e.target.classList.contains('drop-down')
             ){
@@ -203,5 +203,6 @@ export function sideBarNav({ e, focusZone }) {
     /* ---- T KEY ---- */
     if (key === 't') {
         tutorialLink?.focus();
+        // changeTutorialLink(e.target)
     }
 }

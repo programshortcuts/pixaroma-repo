@@ -30,7 +30,7 @@ export function initStepNavigation({ mainTargetDiv }) {
             lastStep = step;
             currentIndex = index;
 
-            changeTutorialLink(step); // ✅ THIS is what keeps sync correct
+            changeTutorialLink(step); // ✅ ALWAYS SYNC HERE
 
             step.scrollIntoView({
                 behavior: 'smooth',
@@ -42,17 +42,17 @@ export function initStepNavigation({ mainTargetDiv }) {
             changeTutorialLink(step);
         });
 
-        step.addEventListener('click', (e) => {
-            // changeTutorialLink(step);
-        });
-
-        // step.addEventListener('pointerup', (e) => {
-        //     changeTutorialLink(e);
+        // step.addEventListener('click', (e) => {
+        //     changeTutorialLink(step);
         // });
 
-        step.addEventListener('touchend', (e) => {
-            // changeTutorialLink(step);
-        });
+        // step.addEventListener('pointerup', (e) => {
+        //     changeTutorialLink(step);
+        // });
+
+        // step.addEventListener('touchend', (e) => {
+        //     changeTutorialLink(step);
+        // });
 
         step.addEventListener('keydown', (e) => handleStepKey(e, step, index));
     });
@@ -196,6 +196,7 @@ document.addEventListener('keydown', (e) => {
                 block: 'start',
                 inline: 'nearest'
             })
+            changeTutorialLink(steps[currentIndex]);
             return;
         }
 
@@ -206,6 +207,7 @@ document.addEventListener('keydown', (e) => {
             block  : 'start',
             inline : 'nearest'
         })
+        changeTutorialLink(steps[currentIndex]);
         return;
     }
 
@@ -217,6 +219,9 @@ document.addEventListener('keydown', (e) => {
             (currentIndex - 1 + steps.length) % steps.length;
 
         steps[currentIndex]?.focus();
+                changeTutorialLink(steps[currentIndex]);
+
+        
         return;
     }
 
@@ -229,10 +234,14 @@ document.addEventListener('keydown', (e) => {
         if (num < steps.length) {
             currentIndex = num;
             steps[currentIndex]?.focus();
+                    changeTutorialLink(steps[currentIndex]);
+
         } 
         if(num >= steps.length) {
             currentIndex = steps.length - 1;
             steps[currentIndex]?.focus();
+                    changeTutorialLink(steps[currentIndex]);
+
         }
        return;
     }

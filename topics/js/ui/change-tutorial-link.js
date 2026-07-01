@@ -4,28 +4,27 @@ export function getTutorialLink() {
 }
 
 export function changeTutorialLink(source) {
-    const tutorialLink = getTutorialLink();
+    const tutorialLink = document.querySelector('#tutorialLink');
     if (!tutorialLink) return;
 
-    let el = null;
+    // Normalize input → always get an element
+    const el =
+        source instanceof Element
+            ? source
+            : source?.target instanceof Element
+                ? source.target
+                : null;
 
-    if (source instanceof Element) {
-        el = source;
-    } else if (source?.target instanceof Element) {
-        el = source.target.closest('[data-video]');
-    } else if (source?.closest) {
-        el = source.closest('[data-video]');
-    }
+    // Find nearest element that actually has video data
+    const videoEl = el?.closest?.('[data-video]');
+    if (!videoEl) return;
 
-    if (!el?.dataset?.video) return;
+    const vidBase = videoEl.dataset.video;
+    const ts = videoEl.dataset.timestamp;
 
-    const vidBase = el.dataset.video;
-    const ts = el.dataset.timestamp;
-    console.log(vidBase)
-    console.log(vidBase)
+    tutorialLink.dataset.timestamp = ts || '';
+
     tutorialLink.href = ts
-        ? `${vidBase}${vidBase.includes('?') ? '&' : '?'}t=${ts}s`
+        ? `${vidBase}&t=${ts}s`
         : vidBase;
-        // console.log(source)
-        console.log(tutorialLink)
 }
