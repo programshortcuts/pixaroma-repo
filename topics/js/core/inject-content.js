@@ -1,5 +1,5 @@
 // inject-content.js (CLEAN RESET ENGINE)
-import { allSideBarLinks, lastClickedSideBarLink, updateLastClicked, getHrefFromLink } from "../nav/side-bar-nav.js";
+import { getAllSideBarLinks, lastClickedSideBarLink, updateLastClicked, getHrefFromLink } from "../nav/side-bar-nav.js";
 import { mainTargetDiv } from "../nav/main-content-nav.js";
 import { initStepNavigation } from "../nav/step-nav.js";
 import { refreshImages, denlargeAllImages } from "../ui/toggle-img-sizes.js";
@@ -13,10 +13,10 @@ let iAllSideBarLinks = 0;
 // NEXT / PREV NAV
 // =========================
 function highlightSidebar() {
-    allSideBarLinks.forEach(el => {
+    getAllSideBarLinks().forEach(el => {
         el.classList.remove('highlight');
     });
-    const current = allSideBarLinks[iAllSideBarLinks];
+    const current = getAllSideBarLinks()[iAllSideBarLinks];
     if (!current) return;
     current.classList.add('highlight');
     const drop = current.closest('.drop-snips');
@@ -42,11 +42,11 @@ nxtBtn?.addEventListener('keydown', e => {
 nxtBtn?.addEventListener('click', e => {
     e.preventDefault();
     iAllSideBarLinks =
-        allSideBarLinks.indexOf(lastClickedSideBarLink);
+        getAllSideBarLinks().indexOf(lastClickedSideBarLink);
     iAllSideBarLinks =
-        (iAllSideBarLinks + 1) % allSideBarLinks.length;
-    updateLastClicked(allSideBarLinks[iAllSideBarLinks]);
-    const href = getHrefFromLink(allSideBarLinks[iAllSideBarLinks]);
+        (iAllSideBarLinks + 1) % getAllSideBarLinks().length;
+    updateLastClicked(getAllSideBarLinks()[iAllSideBarLinks]);
+    const href = getHrefFromLink(getAllSideBarLinks()[iAllSideBarLinks]);
     if (href) {
         highlightSidebar();
         injectContent(href);
@@ -70,12 +70,12 @@ prevBtn?.addEventListener('keydown', e => {
 prevBtn?.addEventListener('click', e => {
     e.preventDefault();
     iAllSideBarLinks =
-        allSideBarLinks.indexOf(lastClickedSideBarLink);
+        getAllSideBarLinks().indexOf(lastClickedSideBarLink);
     iAllSideBarLinks =
-        (iAllSideBarLinks - 1 + allSideBarLinks.length)
-        % allSideBarLinks.length;
-    updateLastClicked(allSideBarLinks[iAllSideBarLinks]);
-    const href = getHrefFromLink(allSideBarLinks[iAllSideBarLinks]);
+        (iAllSideBarLinks - 1 + getAllSideBarLinks().length)
+        % getAllSideBarLinks().length;
+    updateLastClicked(getAllSideBarLinks()[iAllSideBarLinks]);
+    const href = getHrefFromLink(getAllSideBarLinks()[iAllSideBarLinks]);
     if (href) {
         highlightSidebar();
         injectContent(href);

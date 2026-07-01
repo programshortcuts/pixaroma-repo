@@ -11,16 +11,18 @@ import { hideTopicSnips } from "../ui/drop-downs-sidebar-temp.js";
 /* =========================
    STATE
 ========================= */
-export let allSideBarLinks = [...document.querySelectorAll('.side-bar-links a')];
+export function getAllSideBarLinks() {
+    return [...document.querySelectorAll('.side-bar-links a')];
+}
 export let lastClickedSideBarLink = null;
 export let lastFocusedSideBarLink = null;
 let sideBarFocused = false;
 let iSideBarLinks = -1;
 let suppressIndexUpdate = false;
 export function updateLastClicked(link) {
-    let i = allSideBarLinks.indexOf(link)
-    lastClickedSideBarLink = allSideBarLinks[i]
-    lastFocusedSideBarLink = allSideBarLinks[i]
+    let i = getAllSideBarLinks().indexOf(link)
+    lastClickedSideBarLink = getAllSideBarLinks()[i]
+    lastFocusedSideBarLink = getAllSideBarLinks()[i]
 }
 export function getHrefFromLink(link) {
     let href = lastClickedSideBarLink.href
@@ -30,7 +32,7 @@ export function getHrefFromLink(link) {
    INITIAL LOAD
 ========================= */
 export function intiSideBarLinkAutoFocus(){
-    const autoLink = allSideBarLinks.find(el => el.hasAttribute('autofocus'));
+    const autoLink = getAllSideBarLinks().find(el => el.hasAttribute('autofocus'));
     if (autoLink) {
         lastClickedSideBarLink = autoLink;
         lastFocusedSideBarLink = autoLink;
@@ -47,7 +49,7 @@ function isVisible(el) {
     return el && el.offsetParent !== null;
 }
 function getVisibleLinks() {
-    return allSideBarLinks.filter(isVisible);
+    return getAllSideBarLinks().filter(isVisible);
 }
 function isSubLink(el) {
     return !!el.closest('.side-bar-links li ul li a');
@@ -59,10 +61,10 @@ function getParentTopLink(subLink) {
 /* =========================
    LINK LISTENERS
 ========================= */
-allSideBarLinks.forEach((el, i) => {
+getAllSideBarLinks().forEach((el, i) => {
     // CLICK
     el.addEventListener('click', e => {
-        removeAllHighlights(allSideBarLinks)
+        removeAllHighlights(getAllSideBarLinks())
         e.preventDefault();
         lastClickedSideBarLink = el;
         injectContent(el.href);
@@ -94,7 +96,7 @@ allSideBarLinks.forEach((el, i) => {
     });
     // FOCUS
     el.addEventListener('focus', () => {
-        removeAllHighlights(allSideBarLinks)
+        removeAllHighlights(getAllSideBarLinks())
         denlargeAllImages()
         pauseAllVideos()
         lastFocusedSideBarLink = el;
@@ -126,7 +128,7 @@ sideBarBtn.addEventListener('keydown', e => {
     if (e.key.toLowerCase() === 'f') {
         e.preventDefault()
         iSideBarLinks = 0
-        allSideBarLinks[0].focus()
+        getAllSideBarLinks()[0].focus()
         // mainTargetDiv.focus();
     }
     if (!isNaN(e.key)){
@@ -139,8 +141,8 @@ sideBarBtn.addEventListener('focus', () => {
     // sideBar.scrollIntoView({ behavior: "smooth", block: "start",inline:'start' });
     scrollTo(0,0)
 });
-function removeAllHighlights(allSideBarLinks){
-    allSideBarLinks.forEach(el => {
+function removeAllHighlights(){
+    getAllSideBarLinks().forEach(el => {
         if(el.classList.contains('highlight')){
             el.classList.remove('highlight')
         }
@@ -182,7 +184,7 @@ export function sideBarNav({ e, focusZone }) {
             : -1;
         const next = (current + delta + visibleLinks.length) % visibleLinks.length;
         visibleLinks[next].focus();
-        iSideBarLinks = allSideBarLinks.indexOf(visibleLinks[next]);
+        iSideBarLinks = getAllSideBarLinks().indexOf(visibleLinks[next]);
         suppressIndexUpdate = false;
         return;
     }
@@ -192,7 +194,7 @@ export function sideBarNav({ e, focusZone }) {
             const parent = getParentTopLink(activeEl);
             if (parent) {
                 parent.focus();
-                iSideBarLinks = allSideBarLinks.indexOf(parent);
+                iSideBarLinks = getAllSideBarLinks().indexOf(parent);
                 return;
             }
         } else {
