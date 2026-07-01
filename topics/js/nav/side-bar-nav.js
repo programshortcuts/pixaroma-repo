@@ -64,11 +64,12 @@ function getParentTopLink(subLink) {
 getAllSideBarLinks().forEach((el, i) => {
     // CLICK
     el.addEventListener('click', e => {
-        removeAllHighlights(getAllSideBarLinks())
         e.preventDefault();
+
         lastClickedSideBarLink = el;
         injectContent(el.href);
-        changeTutorialLink(e);
+
+        changeTutorialLink(el); // ✅ correct
     });
     // ENTER
     el.addEventListener('keydown', e => {
@@ -76,14 +77,18 @@ getAllSideBarLinks().forEach((el, i) => {
         
         if (key === 'enter') {
             e.preventDefault();
-            changeTutorialLink(e);
-            if (lastFocusedSideBarLink == lastClickedSideBarLink &&
+
+            changeTutorialLink(el); // ✅ correct
+
+            if (
+                lastFocusedSideBarLink == lastClickedSideBarLink &&
                 !e.target.classList.contains('drop-down')
-            ){
-                const step1 = mainTargetDiv.querySelector('.step-float')
-                step1.focus()
-                return
+            ) {
+                const step1 = mainTargetDiv.querySelector('.step-float');
+                step1?.focus();
+                return;
             }
+
             lastClickedSideBarLink = el;
             injectContent(el.href);
         }

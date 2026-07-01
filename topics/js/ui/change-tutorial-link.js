@@ -1,24 +1,27 @@
 // change-tutorial-link.js
-export const tutorialLink = document.querySelector('#tutorialLink');    
+// change-tutorial-link.js
+export const tutorialLink = document.querySelector('#tutorialLink');
+
 export function changeTutorialLink(source) {
-        const el = source instanceof Element
-            ? source
-            : source?.target?.closest?.('[data-video]');
-
-        if (!el) return tutorialLink;
-        
     if (!tutorialLink) return null;
-    
-    // If an event was passed, use its target.
-    // const el = source?.target || source;
 
-    // if (!(el instanceof Element)) return tutorialLink;
+    // normalize → get an element no matter what was passed in
+    let el = null;
 
-    const link = el.closest('[data-video]');
-    if (!link) return tutorialLink;
+    if (source instanceof Element) {
+        el = source;
+    }
+    else if (source?.target instanceof Element) {
+        el = source.target.closest('[data-video]');
+    }
+    else if (source?.closest) {
+        el = source.closest('[data-video]');
+    }
 
-    const vidBase = link.dataset.video;
-    const ts = link.dataset.timestamp;
+    if (!el) return tutorialLink;
+
+    const vidBase = el.dataset.video;
+    const ts = el.dataset.timestamp;
 
     if (!vidBase) return tutorialLink;
 
