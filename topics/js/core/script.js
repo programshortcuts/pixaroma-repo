@@ -11,7 +11,7 @@ import { initAllVideos } from "../ui/video-controls.js";
 import { letterFocus } from "../nav/letter-focus.js";
 import { getFocusZone } from "../nav/get-focus-zone.js";
 import { initDropDowns } from "../ui/drop-downs-sidebar-temp.js";
-import { initSideBarLinkAutoFocus } from "../nav/side-bar-nav.js";
+import { intiSideBarLinkAutoFocus } from "../nav/side-bar-nav.js";
 import { initStepNavigation, lastStep } from "../nav/step-nav.js";
 import { initMediaClicks } from "../ui/toggle-img-sizes.js";
 import {
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', initMain);
 function initMain() {
     if (window._mainScriptInitialized) return;
     window._mainScriptInitialized = true;
-    initSideBarLinkAutoFocus()
+    intiSideBarLinkAutoFocus()
     initDropDowns();
     initToggleSidebar();
     initMediaClicks()

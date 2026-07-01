@@ -1,6 +1,5 @@
 // inject-content.js (CLEAN RESET ENGINE)
-import { getAllSideBarLinks, lastClickedSideBarLink, updateLastClicked, getHrefFromLink } from "../nav/side-bar-nav.js";
-import { changeTutorialLink } from "../ui/change-tutorial-link.js";
+import { allSideBarLinks, lastClickedSideBarLink, updateLastClicked, getHrefFromLink } from "../nav/side-bar-nav.js";
 import { mainTargetDiv } from "../nav/main-content-nav.js";
 import { initStepNavigation } from "../nav/step-nav.js";
 import { refreshImages, denlargeAllImages } from "../ui/toggle-img-sizes.js";
@@ -14,10 +13,10 @@ let iAllSideBarLinks = 0;
 // NEXT / PREV NAV
 // =========================
 function highlightSidebar() {
-    getAllSideBarLinks().forEach(el => {
+    allSideBarLinks.forEach(el => {
         el.classList.remove('highlight');
     });
-    const current = getAllSideBarLinks()[iAllSideBarLinks];
+    const current = allSideBarLinks[iAllSideBarLinks];
     if (!current) return;
     current.classList.add('highlight');
     const drop = current.closest('.drop-snips');
@@ -43,11 +42,11 @@ nxtBtn?.addEventListener('keydown', e => {
 nxtBtn?.addEventListener('click', e => {
     e.preventDefault();
     iAllSideBarLinks =
-        getAllSideBarLinks().indexOf(lastClickedSideBarLink);
+        allSideBarLinks.indexOf(lastClickedSideBarLink);
     iAllSideBarLinks =
-        (iAllSideBarLinks + 1) % getAllSideBarLinks().length;
-    updateLastClicked(getAllSideBarLinks()[iAllSideBarLinks]);
-    const href = getHrefFromLink(getAllSideBarLinks()[iAllSideBarLinks]);
+        (iAllSideBarLinks + 1) % allSideBarLinks.length;
+    updateLastClicked(allSideBarLinks[iAllSideBarLinks]);
+    const href = getHrefFromLink(allSideBarLinks[iAllSideBarLinks]);
     if (href) {
         highlightSidebar();
         injectContent(href);
@@ -71,12 +70,12 @@ prevBtn?.addEventListener('keydown', e => {
 prevBtn?.addEventListener('click', e => {
     e.preventDefault();
     iAllSideBarLinks =
-        getAllSideBarLinks().indexOf(lastClickedSideBarLink);
+        allSideBarLinks.indexOf(lastClickedSideBarLink);
     iAllSideBarLinks =
-        (iAllSideBarLinks - 1 + getAllSideBarLinks().length)
-        % getAllSideBarLinks().length;
-    updateLastClicked(getAllSideBarLinks()[iAllSideBarLinks]);
-    const href = getHrefFromLink(getAllSideBarLinks()[iAllSideBarLinks]);
+        (iAllSideBarLinks - 1 + allSideBarLinks.length)
+        % allSideBarLinks.length;
+    updateLastClicked(allSideBarLinks[iAllSideBarLinks]);
+    const href = getHrefFromLink(allSideBarLinks[iAllSideBarLinks]);
     if (href) {
         highlightSidebar();
         injectContent(href);
@@ -85,8 +84,6 @@ prevBtn?.addEventListener('click', e => {
 // =========================
 // CONTENT LOADER
 // =========================
-
-
 export function injectContent(href) {
     fetch(href)
         .then(res => {
@@ -94,32 +91,28 @@ export function injectContent(href) {
             return res.text();
         })
         .then(html => {
-
+            // =========================
+            // 1. RESET STATE BEFORE INJECT
+            // =========================
             denlargeAllImages();
             mainTargetDiv.innerHTML = html;
             scrollTo(0, 0);
-
+            // =========================
+            // 2. REINITIALIZE CORE SYSTEMS
+            // =========================
             refreshImages(mainTargetDiv);
             addCopyCode();
             initStepNavigation({ mainTargetDiv });
-            initAllVideos(mainTargetDiv);
-
-            // 🔥 NEW: ALWAYS sync tutorial link AFTER DOM exists
-            requestAnimationFrame(() => {
-
-                const firstStep = mainTargetDiv.querySelector('.step-float');
-
-                // IMPORTANT ORDER:
-                // 1. set base video from sidebar
-                if (lastClickedSideBarLink) {
-                    changeTutorialLink(lastClickedSideBarLink);
-                }
-
-                // 2. override timestamp from first step (if exists)
-                if (firstStep) {
-                    changeTutorialLink(firstStep);
-                }
-            });
+            initAllVideos(mainTargetDiv)
+            // =========================
+            // 3. CLEAN FOCUS STATE
+            // =========================
+            const firstStep =
+                mainTargetDiv.querySelector('.step-float');
+            if (firstStep) {
+                // firstStep.focus();
+            }
+            
         })
         .catch(err => {
             console.error('Failed to load content:', err);

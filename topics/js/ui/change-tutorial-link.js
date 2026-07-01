@@ -1,10 +1,8 @@
-// change-tutorial-link.js
 export const tutorialLink = document.querySelector('#tutorialLink');
 
 export function changeTutorialLink(source) {
     if (!tutorialLink) return null;
 
-    // normalize → get an element no matter what was passed in
     let el = null;
 
     if (source instanceof Element) {
@@ -27,18 +25,21 @@ export function changeTutorialLink(source) {
     tutorialLink.href = ts
         ? `${vidBase}${vidBase.includes('?') ? '&' : '?'}t=${ts}s`
         : vidBase;
-    console.log(tutorialLink)
+
     return tutorialLink;
 }
 
+/* ✅ THIS IS THE ONLY COORDINATOR FUNCTION */
 export function syncTutorialLink(sidebarEl, stepEl) {
     if (!tutorialLink) return;
 
-    if (sidebarEl?.dataset?.video) {
+    // 1. set base from sidebar
+    if (sidebarEl) {
         changeTutorialLink(sidebarEl);
     }
 
-    if (stepEl?.dataset?.timestamp) {
+    // 2. override timestamp from step
+    if (stepEl) {
         changeTutorialLink(stepEl);
     }
 }
