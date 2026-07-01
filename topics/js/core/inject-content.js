@@ -107,11 +107,8 @@ export function injectContent(href) {
             // =========================
             // 3. CLEAN FOCUS STATE
             // =========================
-            const firstStep =
-                mainTargetDiv.querySelector('.step-float');
-            if (firstStep) {
-                // firstStep.focus();
-            }
+            // ✅ ADD THIS
+            
             
         })
         .catch(err => {

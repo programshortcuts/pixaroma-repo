@@ -1,6 +1,6 @@
 // main-content-nav.js
 import { denlargeAllImages } from "../ui/toggle-img-sizes.js";
-import { tutorialLink } from "../ui/change-tutorial-link.js";
+import { getTutorialLink } from "../ui/change-tutorial-link.js";
 import { handleMKey } from "./m-key-handler.js";
 import {
     mainContainer,
@@ -101,7 +101,9 @@ export function mainContentNav({ e, focusZone }) {
         return;
     }
     if (key === 't') {
-        tutorialLink.focus()
+        console.log()
+        getTutorialLink().focus()
+        
         return;
     }
     // =========================
