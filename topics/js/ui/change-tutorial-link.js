@@ -1,5 +1,4 @@
 // change-tutorial-link.js
-// change-tutorial-link.js
 export const tutorialLink = document.querySelector('#tutorialLink');
 
 export function changeTutorialLink(source) {
@@ -30,4 +29,16 @@ export function changeTutorialLink(source) {
         : vidBase;
     console.log(tutorialLink)
     return tutorialLink;
+}
+
+export function syncTutorialLink(sidebarEl, stepEl) {
+    if (!tutorialLink) return;
+
+    if (sidebarEl?.dataset?.video) {
+        changeTutorialLink(sidebarEl);
+    }
+
+    if (stepEl?.dataset?.timestamp) {
+        changeTutorialLink(stepEl);
+    }
 }

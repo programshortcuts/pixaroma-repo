@@ -1,5 +1,6 @@
 // inject-content.js (CLEAN RESET ENGINE)
 import { getAllSideBarLinks, lastClickedSideBarLink, updateLastClicked, getHrefFromLink } from "../nav/side-bar-nav.js";
+import { changeTutorialLink } from "../ui/change-tutorial-link.js";
 import { mainTargetDiv } from "../nav/main-content-nav.js";
 import { initStepNavigation } from "../nav/step-nav.js";
 import { refreshImages, denlargeAllImages } from "../ui/toggle-img-sizes.js";
@@ -84,6 +85,8 @@ prevBtn?.addEventListener('click', e => {
 // =========================
 // CONTENT LOADER
 // =========================
+
+
 export function injectContent(href) {
     fetch(href)
         .then(res => {
@@ -91,28 +94,32 @@ export function injectContent(href) {
             return res.text();
         })
         .then(html => {
-            // =========================
-            // 1. RESET STATE BEFORE INJECT
-            // =========================
+
             denlargeAllImages();
             mainTargetDiv.innerHTML = html;
             scrollTo(0, 0);
-            // =========================
-            // 2. REINITIALIZE CORE SYSTEMS
-            // =========================
+
             refreshImages(mainTargetDiv);
             addCopyCode();
             initStepNavigation({ mainTargetDiv });
-            initAllVideos(mainTargetDiv)
-            // =========================
-            // 3. CLEAN FOCUS STATE
-            // =========================
-            const firstStep =
-                mainTargetDiv.querySelector('.step-float');
-            if (firstStep) {
-                // firstStep.focus();
-            }
-            
+            initAllVideos(mainTargetDiv);
+
+            // 🔥 NEW: ALWAYS sync tutorial link AFTER DOM exists
+            requestAnimationFrame(() => {
+
+                const firstStep = mainTargetDiv.querySelector('.step-float');
+
+                // IMPORTANT ORDER:
+                // 1. set base video from sidebar
+                if (lastClickedSideBarLink) {
+                    changeTutorialLink(lastClickedSideBarLink);
+                }
+
+                // 2. override timestamp from first step (if exists)
+                if (firstStep) {
+                    changeTutorialLink(firstStep);
+                }
+            });
         })
         .catch(err => {
             console.error('Failed to load content:', err);

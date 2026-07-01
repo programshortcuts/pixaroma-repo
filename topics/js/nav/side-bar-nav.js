@@ -31,7 +31,7 @@ export function getHrefFromLink(link) {
 /* =========================
    INITIAL LOAD
 ========================= */
-export async function intiSideBarLinkAutoFocus() {
+export async function initSideBarLinkAutoFocus() {
     const autoLink = getAllSideBarLinks().find(el => el.hasAttribute('autofocus'));
 
     if (!autoLink) {
@@ -45,9 +45,12 @@ export async function intiSideBarLinkAutoFocus() {
     await injectContent(autoLink.href);
 
     // ✅ IMPORTANT: run AFTER DOM exists
+    await injectContent(autoLink.href);
+
+    // set base
     changeTutorialLink(autoLink);
 
-    // 🔥 NEW: force sync with first step in loaded content
+    // wait for DOM to settle then override timestamp
     requestAnimationFrame(() => {
         const firstStep = mainTargetDiv.querySelector('.step-float');
         if (firstStep) {
