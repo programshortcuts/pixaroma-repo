@@ -61,7 +61,10 @@ body {
     flex-wrap: wrap;
 }
 
-.step-floats-container {
+.step-floats-container{
     display: flex;
     flex-direction: column;
+}
+.step-floats-container .step-float{
+    margin-left: 1%;
 }

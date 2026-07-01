@@ -56,11 +56,12 @@
     max-width:  20vw;
 }
 
-.step-floats-container >.steps-container{
+.step-floats-container {
     width: 100%;
     
 }
-.step-floats-container >.steps-container >.step-float{
+.step-floats-container >.step-float{
+    /* background-color: blue; */
     width: 50%;
     /* background-color: white !important; */
 }

@@ -20,6 +20,7 @@ aside.side-bar{
     border: 1px solid whitesmoke
 }
 
-.step-floats-container>.steps-container>.step-float {
+/* .step-floats-container>.steps-container>.step-float { */
+.step-floats-container>.step-float {
     border-bottom: none !important;
 }
