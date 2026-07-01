@@ -30,7 +30,7 @@ export function initStepNavigation({ mainTargetDiv }) {
             lastStep = step;
             currentIndex = index;
 
-            changeTutorialLink(step); // ✅ ALWAYS SYNC HERE
+            // changeTutorialLink(step); // ✅ ALWAYS SYNC HERE
 
             step.scrollIntoView({
                 behavior: 'smooth',
@@ -69,7 +69,7 @@ function handleStepKey(e, step, index) {
     if (!step.contains(active)) return;
 
     // ALWAYS update tutorial link based on current step
-    changeTutorialLink(step);
+    // changeTutorialLink(step);
 
     if (key === 'enter' && e.shiftKey) {
         e.preventDefault();
