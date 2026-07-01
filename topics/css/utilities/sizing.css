@@ -55,3 +55,12 @@
     max-height: 20vh;
     max-width:  20vw;
 }
+
+.step-floats-container >.steps-container{
+    width: 100%;
+    
+}
+.step-floats-container >.steps-container >.step-float{
+    width: 50%;
+    /* background-color: white !important; */
+}

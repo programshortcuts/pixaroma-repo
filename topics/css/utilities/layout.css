@@ -60,3 +60,8 @@ body {
     display: flex;
     flex-wrap: wrap;
 }
+
+.step-floats-container {
+    display: flex;
+    flex-direction: column;
+}
