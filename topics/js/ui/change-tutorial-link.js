@@ -21,10 +21,11 @@ export function changeTutorialLink(source) {
 
     const vidBase = el.dataset.video;
     const ts = el.dataset.timestamp;
-    console.log(ts)
+    console.log(vidBase)
+    console.log(vidBase)
     tutorialLink.href = ts
         ? `${vidBase}${vidBase.includes('?') ? '&' : '?'}t=${ts}s`
         : vidBase;
         // console.log(source)
-        // console.log(tutorialLink)
+        console.log(tutorialLink)
 }
