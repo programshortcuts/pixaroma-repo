@@ -62,15 +62,15 @@
         
     }
     .side-bar-links-container > ul >li {
-        font-size: 76% !important;
+        /* font-size: 76% !important; */
         /* color: purple; */
     }
     .side-bar-links-container > ul >li > ul >li {
-        font-size: 60% !important;
+        /* font-size: 60% !important; */
         /* color: purple; */
     }
     .side-bar ul li a{
-        font-size: .86rem;
+        /* font-size: .86rem; */
     }
     .step-content p {
         font-size: 75%;   
@@ -102,12 +102,15 @@
     :root {
             --sidebar-width: 120px !important;
     
-        }
-        .content-boxes {
-            display: flex;
-            flex-direction: column;
-        }
     }
+    .content-boxes {
+        display: flex;
+        flex-direction: column;
+    }
+    ul.side-bar-links > li> a {
+        font-size: .5rem !important;    
+    }
+}
 @media screen and (max-width: 519px) {
     :root {
             --sidebar-width: 100px !important;
