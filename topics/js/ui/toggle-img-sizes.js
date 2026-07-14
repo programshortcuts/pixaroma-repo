@@ -125,7 +125,7 @@ export function bindMainFocusReset(mainTargetDiv) {
             return;
         }
 
-        denlargeAllImages();
+        // denlargeAllImages();
     });
 }
 

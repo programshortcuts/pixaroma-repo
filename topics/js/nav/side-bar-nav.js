@@ -14,6 +14,8 @@ import { hideTopicSnips } from "../ui/drop-downs-sidebar-temp.js";
 export let allSideBarLinks = [...document.querySelectorAll('.side-bar-links a')];
 export let lastClickedSideBarLink = null;
 export let lastFocusedSideBarLink = null;
+let currentNumberRange = 0;      // 0 = 1-10, 1 = 11-20, etc.
+let lastNumberPressed = null;
 let sideBarFocused = false;
 let iSideBarLinks = -1;
 let suppressIndexUpdate = false;
@@ -100,6 +102,7 @@ allSideBarLinks.forEach((el, i) => {
         lastFocusedSideBarLink = el;
         if (!suppressIndexUpdate) {
             iSideBarLinks = i;
+            currentNumberRange = Math.floor(i / 10);
         }
         el.classList.add('highlight')
     });
@@ -119,6 +122,7 @@ sideBarBtn.addEventListener('keydown', e => {
     }
     if (e.key.toLowerCase() === 's') {
         lastClickedSideBarLink.focus()
+        scrollCenterVert(lastClickedSideBarLink)
     }
     if (e.key.toLowerCase() === 'm') {
         mainTargetDiv.focus();
@@ -127,12 +131,14 @@ sideBarBtn.addEventListener('keydown', e => {
         e.preventDefault()
         iSideBarLinks = 0
         allSideBarLinks[0].focus()
+        
         // mainTargetDiv.focus();
     }
     if (!isNaN(e.key)){
         const firstSideBarParents = document.querySelectorAll('.side-bar-links > li > a');
         const intLet = parseInt(e.key.toLowerCase())
         firstSideBarParents[intLet - 1].focus()
+        scrollCenterVert(firstSideBarParents[intLet - 1])
     }
 });
 sideBarBtn.addEventListener('focus', () => {
@@ -159,17 +165,78 @@ export function sideBarNav({ e, focusZone }) {
     const activeEl = document.activeElement;
     const visibleLinks = getVisibleLinks();
     /* ---- NUMBER KEYS ---- */
+    /* ---- NUMBER KEYS ---- */
     if (!isNaN(key)) {
-        const index = parseInt(key) - 1;
+
         if (isSubLink(activeEl)) {
             const ul = activeEl.closest('ul');
             const subs = [...ul.querySelectorAll('li > a')].filter(isVisible);
-            subs[index]?.focus();
-            subs[index]?.scrollIntoView({ behavior: "smooth", block: "center", inline: 'center' });
-        } else {
-            visibleLinks[index]?.focus()
-            visibleLinks[index]?.scrollIntoView({ behavior: "smooth", block: "center", inline: 'center' });
+
+            const digit = key === "0" ? 10 : Number(key);
+
+            subs[digit - 1]?.focus();
+            scrollCenterVert(subs[digit - 1]);
+
+            return;
         }
+
+
+        const digit = key === "0" ? 10 : Number(key);
+
+        const currentIndex = visibleLinks.indexOf(activeEl);
+
+        // What number is the currently focused sidebar?
+        const currentDigit = (currentIndex % 10) + 1;
+
+
+        /*
+           SAME DIGIT:
+           cycle through 5,15,25,35...
+        */
+        if (digit === currentDigit) {
+
+            const matches = visibleLinks.filter((_, index) => {
+                return (index % 10) + 1 === digit;
+            });
+
+
+            const matchIndex = matches.indexOf(activeEl);
+
+            let next;
+
+            if (e.shiftKey) {
+                next = matchIndex <= 0
+                    ? matches.length - 1
+                    : matchIndex - 1;
+            } else {
+                next = matchIndex + 1 >= matches.length
+                    ? 0
+                    : matchIndex + 1;
+            }
+
+
+            matches[next].focus();
+            scrollCenterVert(matches[next]);
+
+            return;
+        }
+
+
+        /*
+           DIFFERENT DIGIT:
+           stay in the current decade
+        */
+
+        const decadeStart = Math.floor(currentIndex / 10) * 10;
+
+        const targetIndex = decadeStart + (digit - 1);
+
+
+        if (visibleLinks[targetIndex]) {
+            visibleLinks[targetIndex].focus();
+            scrollCenterVert(visibleLinks[targetIndex]);
+        }
+
         return;
     }
     /* ---- FORWARD / BACK ---- */
@@ -182,6 +249,7 @@ export function sideBarNav({ e, focusZone }) {
             : -1;
         const next = (current + delta + visibleLinks.length) % visibleLinks.length;
         visibleLinks[next].focus();
+        scrollCenterVert(visibleLinks[next])
         iSideBarLinks = allSideBarLinks.indexOf(visibleLinks[next]);
         suppressIndexUpdate = false;
         return;
@@ -205,4 +273,9 @@ export function sideBarNav({ e, focusZone }) {
         tutorialLink?.focus();
         // changeTutorialLink(e.target)
     }
+}
+
+function scrollCenterVert(el){
+    el.scrollIntoView({behavior:'instant',
+                       block:'center'})
 }
