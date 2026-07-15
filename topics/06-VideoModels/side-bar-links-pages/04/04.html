@@ -1,22 +1,54 @@
-<!-- 03.html -->
+<!-- 04.html -->
 <div id="targetDiv">
     <header>
-        <h3 >Part 3 -</h3>
+        <h3 >Part 4 - LORAS</h3>
     </header>
     <div class="steps-container">
         <!-- 1. -->
         <div tabindex="0" class="step-float" data-video="https://www.youtube.com/watch?v=Z8JlJdXdVg4&list=PL-pohOSaL8P-FhSw1Iwf0pBGzXdtv4DZC&index=6"
-            data-timestamp="450">
+            data-timestamp="720">
             <h4>1</h4>
             
             <div class="step-txt ">
                 <p>
-                   It's working , you must make sure the width and height in the <strong>Adjust Size and Duration</strong>
-                   is the the same is <strong>Load Image</strong>
-                </p>            
-                <p>
-                    You can see this model works better with larger images less than 1024 x 900ish
+                    Use the the Wan 2.2 Image to Video + Lora workflow
                 </p>
+                <p>
+                    Install the lora into ComfyUI/loras/wan2.2
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+                        wan2.2-i2v-loras-eye-in/resolve/main/highnoise.safetensors</code>
+                </div>
+                <p>
+                    from here ,
+                    <a target="_blank" href="https://huggingface.co/NikolaSigmoid/wan2.2-i2v-loras-eye-in/resolve/main/highnoise.safetensors">
+                        https://huggingface.co/NikolaSigmoid/wan2.2-i2v-loras-eye-in/resolve/main/highnoise.safetensors
+                    </a>    
+                </p>
+            </div>
+        </div>
+        <!-- 2. -->
+        <div tabindex="0" class="step-float" data-video="https://www.youtube.com/watch?v=Z8JlJdXdVg4&list=PL-pohOSaL8P-FhSw1Iwf0pBGzXdtv4DZC&index=6"
+            data-timestamp="720">
+            <h4>2</h4>
+            
+            <div class="step-txt ">
+                <p>
+                 I'm trying a different lora found here
+                <a target="_blank" href="https://huggingface.co/Abiray/Wan2.2-LightX2V-260412-4STEP-GGUF/tree/main">
+                    https://huggingface.co/Abiray/Wan2.2-LightX2V-260412-4STEP-GGUF/tree/main
+                </a>
+                
+                 for different workflows
+                </p>
+                <p>
+                    i'm using
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+                        wan2.2_i2v_A14b_high_noise_lightx2v_4step-Q4_K_M.gguf</code>
+                </div>
                 
             </div>
         </div>
