@@ -82,13 +82,13 @@ function handleStepKey(e, step, index) {
 
         const isDirectStepFocus = active === step;
 
-        // if (isDirectStepFocus) {
-        //     const firstFocusableChild = getFirstFocusableChild(step);
-        //     if (firstFocusableChild) {
-        //         firstFocusableChild.focus();
-        //         return;
-        //     }
-        // }
+        if (isDirectStepFocus) {
+            const firstFocusableChild = getFirstFocusableChild(step);
+            if (firstFocusableChild) {
+                firstFocusableChild.focus();
+                return;
+            }
+        }
         changeTutorialLink(step)
         cycleMedia(step);
     }
@@ -266,3 +266,8 @@ function syncStep() {
    EXPOSE
 ========================= */
 export function getLastStep() {return lastStep;}
+
+function getFirstFocusableChild(step) {
+    const copyCode = step.querySelector('.copy-code');
+    copyCode?.focus();
+}
