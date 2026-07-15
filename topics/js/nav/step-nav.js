@@ -66,19 +66,7 @@ export function initStepNavigation({ mainTargetDiv }) {
 
         step.addEventListener('click', () => {
             changeTutorialLink(step);
-        });
-
-        // step.addEventListener('click', (e) => {
-        //     changeTutorialLink(step);
-        // });
-
-        // step.addEventListener('pointerup', (e) => {
-        //     changeTutorialLink(step);
-        // });
-
-        // step.addEventListener('touchend', (e) => {
-        //     changeTutorialLink(step);
-        // });
+        })
 
         step.addEventListener('keydown', (e) => handleStepKey(e, step, index));
     });
@@ -97,6 +85,10 @@ function handleStepKey(e, step, index) {
     // ALWAYS update tutorial link based on current step
     // changeTutorialLink(step);
 
+    if (key === 'm' ) {
+        denlargeAllImages()
+        return;
+    }
     if (key === 'enter' && e.shiftKey) {
         e.preventDefault();
         cycleMedia(step);

@@ -50,6 +50,7 @@ export function mainContentNav({ e, focusZone }) {
     // M KEY → RETURN TO STEP / MAIN
     // =========================
     if (key === 'm') {
+        
         handleMKey({ e, focusZone });
         return;
     }
@@ -111,7 +112,8 @@ export function mainContentNav({ e, focusZone }) {
     // DO NOT HANDLE STEP NAV HERE ANYMORE
     // =========================
     // Step system is fully handled inside step-nav.js
-    if(key === 'escape'){
+    if(key === 'escape' || key === 'm'){
+        
         denlargeAllImages()
     }
 }
