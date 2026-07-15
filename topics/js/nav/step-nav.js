@@ -20,6 +20,31 @@ export function initStepNavigation({ mainTargetDiv }) {
     steps = [...mainTargetDiv.querySelectorAll('.step-float')];
     currentIndex = 0;
 
+    const copyCodes = [...mainTargetDiv.querySelectorAll('.copy-code')];
+    const asStep = [...mainTargetDiv.querySelectorAll('.step-float a')];
+    
+    copyCodes.forEach(el => {
+        el.addEventListener('focus', () => {
+            denlargeAllImages();
+        });
+    });
+    asStep.forEach(el => {
+        el.addEventListener('focus', () => {
+            denlargeAllImages();
+        });
+        el.addEventListener('click', (e) => {
+            e.preventDefault()
+            const href = e.target.href
+            window.open(href,'_blank')
+        });
+        el.addEventListener('keydown', (e) => {
+            const key = e.key.toLowerCase()
+            if(key === 'enter'){
+                const href = e.target.href
+                window.open(href,'_blank')
+            }
+        });
+    });
     steps.forEach((step, index) => {
         if(step.hasAttribute('data-auto-focus')){
             step.focus()
