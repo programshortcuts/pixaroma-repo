@@ -1,4 +1,11 @@
 
+@media screen and (min-width: 701px) {
+    .step-vid>video,
+    .step-img>img {
+        max-height: 350px;
+        max-width: 420px;
+    }
+}
 @media screen and (max-width: 700px) {
     .side-bar-links a *,
     .side-bar-links > li > a {

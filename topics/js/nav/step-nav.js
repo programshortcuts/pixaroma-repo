@@ -29,6 +29,7 @@ export function initStepNavigation({ mainTargetDiv }) {
         });
     });
     asStep.forEach(el => {
+        el.setAttribute('tabindex','0')
         el.addEventListener('focus', () => {
             denlargeAllImages();
         });
