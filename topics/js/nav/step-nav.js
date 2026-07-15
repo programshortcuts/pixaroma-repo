@@ -130,34 +130,44 @@ document.addEventListener('keydown', (e) => {
        COPY CODE NAVIGATION
     ========================= */
 
-    const activeCopyCode =
-        active?.classList?.contains('copy-code')
+    /* =========================
+    STEP CONTROL NAVIGATION
+    (.copy-code + .step-float a)
+ ========================= */
+
+    const activeControl =
+        active?.matches?.('.copy-code, .step-float a')
             ? active
             : null;
 
-    if (activeCopyCode) {
+    if (activeControl) {
 
         const parentStep =
-            activeCopyCode.closest('.step-float');
+            activeControl.closest('.step-float');
 
-        const copyCodes = [
-            ...parentStep.querySelectorAll('.copy-code')
+        const controls = [
+            ...parentStep.querySelectorAll(
+                '.copy-code, a'
+            )
         ];
 
-        const currentCodeIndex =
-            copyCodes?.indexOf(activeCopyCode);
-        if(!isNaN(key)){
-            const intKey = parseInt(key)    
-            copyCodes[intKey - 1]?.focus()
+        const currentControlIndex =
+            controls.indexOf(activeControl);
+
+        if (!isNaN(key)) {
+            const index = parseInt(key, 10) - 1;
+            controls[index]?.focus();
+            return;
         }
+
         if (key === 'f') {
             e.preventDefault();
 
             const nextIndex =
-                (currentCodeIndex + 1) %
-                copyCodes.length;
+                (currentControlIndex + 1) %
+                controls.length;
 
-            copyCodes[nextIndex]?.focus();
+            controls[nextIndex]?.focus();
             return;
         }
 
@@ -165,10 +175,10 @@ document.addEventListener('keydown', (e) => {
             e.preventDefault();
 
             const prevIndex =
-                (currentCodeIndex - 1 + copyCodes.length) %
-                copyCodes.length;
+                (currentControlIndex - 1 + controls.length) %
+                controls.length;
 
-            copyCodes[prevIndex]?.focus();
+            controls[prevIndex]?.focus();
             return;
         }
 
@@ -293,6 +303,8 @@ function syncStep() {
 export function getLastStep() {return lastStep;}
 
 function getFirstFocusableChild(step) {
-    const copyCode = step.querySelector('.copy-code');
-    copyCode?.focus();
+    return (
+        step.querySelector('.copy-code') ||
+        step.querySelector('a')
+    );
 }
