@@ -1455,7 +1455,7 @@ self.model = (
         <div tabindex="0" class="step-float" data-video="" data-timestamp="">
             <h4>8</h4>
             <div class="step-img">
-                <img loading="lazy" src="side-bar-links-pages/images/08.png" alt="">
+                <img loading="lazy" src="images/07.png" alt="">
             </div>
 
             <div class="step-txt ">
@@ -1493,14 +1493,27 @@ def __init__(..., device=...):                        </pre>
     self.video_loader_type = video_loader_type
 
     self.device = (
-    torch.device("mps")
-    if torch.backends.mps.is_available()
-    else torch.device("cuda")
-    if torch.cuda.is_available()
-    else torch.device("cpu")
+        torch.device("mps")
+        if torch.backends.mps.is_available()
+        else torch.device("cuda")
+        if torch.cuda.is_available()
+        else torch.device("cpu")
     )
 
-    from ..model_builder import build_sam3_video_model</pre>
+    from ..model_builder import build_sam3_video_model
+
+    self.model = (
+        build_sam3_video_model(
+            checkpoint_path=checkpoint_path,
+            bpe_path=bpe_path,
+            has_presence_token=has_presence_token,
+            geo_encoder_use_img_cross_attn=geo_encoder_use_img_cross_attn,
+            strict_state_dict_loading=strict_state_dict_loading,
+            apply_temporal_disambiguation=apply_temporal_disambiguation,
+        )
+        .to(self.device)
+        .eval()
+    )</pre>
                 </div>
 
                 <p>
@@ -1517,8 +1530,109 @@ def __init__(..., device=...):                        </pre>
 
             </div>
         </div>
+        <div tabindex="0" class="step-float" data-video="" data-timestamp="">
+            <h4>10</h4>
 
+            <div class="step-txt ">
+                <p>
+                    error now in
+                </p>
+                <pre>
+sam3/model/io_utils.py", line 66
+images = images.cuda()</pre>
+            </div>
+            <p>
+                change
+            </p>
+            <div class="code-container">
+                <code tabindex="0" class="copy-code">
+images = images.cuda()</code>
+            </div>
+            <p>
+                to
+            </p>
+            <div class="code-container">
+                <code tabindex="0" class="copy-code">
+images = images.to("mps")</code>
+            </div>
+            <p>
+                But let's make it cleaner because there are multiple .cuda() calls in this file.
 
+                At the top of io_utils.py, after:
+            </p>
+            <div class="code-container">
+                <code tabindex="0" class="copy-code">
+                    import torch</code>
+            </div>
+            <p>
+                add
+            </p>
+            <div class="code-container">
+                <pre tabindex="0" class="copy-code">
+DEVICE = (
+torch.device("mps")
+if torch.backends.mps.is_available()
+else torch.device("cuda")
+if torch.cuda.is_available()
+else torch.device("cpu")                   )</pre>
+            </div>
+            <p>
+                then replace
+            </p>
+            <div class="code-container">
+                <code tabindex="0" class="copy-code">
+                    images = images.cuda()</code>
+            </div>
+            <p>to</p>
+            <div class="code-container">
+                <code tabindex="0" class="copy-code">
+                    images = images.to(DEVICE)</code>
+            </div>
+            <p>
+                find a replace
+            </p>
+            <div class="code-container">
+                <code tabindex="0" class="copy-code">
+                    img_mean = img_mean.cuda()</code>
+            </div>
+            <p>to</p>
+            <div class="code-container">
+                <code tabindex="0" class="copy-code">
+                    img_mean = img_mean.to(DEVICE)</code>
+            </div>
+
+            <br>
+            <div class="code-container">
+                <code tabindex="0" class="copy-code">
+                    img_std = img_std.cuda()</code>
+            </div>
+            <p>
+                to
+            </p>
+            <div class="code-container">
+                <code tabindex="0" class="copy-code">
+
+                    img_std = img_std.to(DEVICE)</code>
+            </div>
+            <p>then casche</p>
+            <div class="code-container">
+                <code tabindex="0" class="copy-code">
+                    find ~/ComfyUI/custom_nodes/comfyui-easy-sam3 -name "__pycache__" -type d -exec rm -rf {} +</code>
+            </div>
+        </div>
+
+        <div tabindex="0" class="step-float" data-video="" data-timestamp="">
+            <h4>11 fix __init__.py</h4>
+            <div class="step-txt ">
+                <p>
+                    find
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+                        torch.cuda.current_device()</code>
+                </div>
+            </div>
+        </div>
 
     </div>
 </div>
