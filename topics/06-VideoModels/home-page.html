@@ -1372,11 +1372,42 @@ import torch
 SAM3_DEVICE = "mps" if torch.backends.mps.is_available() else "cuda" if torch.cuda.is_available() else "cpu"                        
                     </pre>
                 </div>
-
-
+                <p>
+                    then change remaining
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+                                   device="cuda"</code>
+                </div>
+                <p>
+                    to
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code m">
+                              device=SAM3_DEVICE</code>
+                </div>
+                <p>
+                    clear cashe
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+                        find ~/ComfyUI/custom_nodes/comfyui-easy-sam3 -name "__pycache__" -type d -exec rm -rf {} +</code>
+                </div>
+            </div>
+            <div class="imgs-container">
+                <div class="step-img">
+                    <img loading="lazy" src="side-bar-links-pages/images/06.png" alt="">
+                </div>
+                <div class="step-img">
+                    <img loading="lazy" src="side-bar-links-pages/images/06-b.png" alt="">
+                </div>
 
             </div>
         </div>
+        <p>
+            For the rest of debuggin, just go to WanVideo Text Encoder Debug, and finish you chatgpt
+            extension please for the love of god
+        </p>
 
 
 
