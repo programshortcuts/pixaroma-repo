@@ -1438,6 +1438,80 @@ self.model = (
     build_sam3_video_model(...)
     .to(self.device)                       )</pre>
                 </div>
+                <p>
+                    then casche again
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+    find ~/ComfyUI/custom_nodes/comfyui-easy-sam3 -name "__pycache__" -type d -exec rm -rf {} +</code>
+                </div>
+                <p>restart again</p>
+
+
+
+
+            </div>
+        </div>
+        <div tabindex="0" class="step-float" data-video="" data-timestamp="">
+            <h4>8</h4>
+            <div class="step-img">
+                <img loading="lazy" src="side-bar-links-pages/images/08.png" alt="">
+            </div>
+
+            <div class="step-txt ">
+                <p>
+                    open ~/ComfyUI/custom_nodes/comfyui-easy-sam3/sam3/model/sam3_video_predictor.py
+                </p>
+                <p>
+                    look for
+                </p>
+                <div class="code-container">
+                    <pre tabindex="0" class="copy-code">
+class Sam3VideoPredictor:
+def __init__(..., device=...):                        </pre>
+                </div>
+                <p>or</p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+                            def __init__(self, ...):</code>
+                </div>
+                <p>change</p>
+                <div class="code-container">
+                    <pre tabindex="0" class="copy-code">
+):
+    self.async_loading_frames = async_loading_frames
+    self.video_loader_type = video_loader_type
+    from ..model_builder import build_sam3_video_model</pre>
+                </div>
+                <p>
+                    to
+                </p>
+                <div class="code-container">
+                    <pre tabindex="0" class="copy-code">
+):
+    self.async_loading_frames = async_loading_frames
+    self.video_loader_type = video_loader_type
+
+    self.device = (
+    torch.device("mps")
+    if torch.backends.mps.is_available()
+    else torch.device("cuda")
+    if torch.cuda.is_available()
+    else torch.device("cpu")
+    )
+
+    from ..model_builder import build_sam3_video_model</pre>
+                </div>
+
+                <p>
+                    leave this part alone
+                </p>
+                <div class="code-container">
+                    <pre tabindex="0" class="copy-code">
+.to(self.device)                 
+.eval()</pre>
+                </div>
+
 
 
 
