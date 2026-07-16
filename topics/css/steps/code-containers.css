@@ -22,4 +22,5 @@
 .code-container>pre.copy-code {
     width: fit-content;
     min-width: 50%;
+    overflow: scroll !important;
 }
