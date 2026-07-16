@@ -1404,10 +1404,45 @@ SAM3_DEVICE = "mps" if torch.backends.mps.is_available() else "cuda" if torch.cu
 
             </div>
         </div>
-        <p>
-            For the rest of debuggin, just go to WanVideo Text Encoder Debug, and finish you chatgpt
-            extension please for the love of god
-        </p>
+        <div tabindex="0" class="step-float" data-video="" data-timestamp="">
+            <h4>7</h4>
+            <div class="step-img">
+                <img loading="lazy" src="side-bar-links-pages/images/07.png" alt="">
+            </div>
+
+            <div class="step-txt ">
+                <p>in sam3_video_predictor.py</p>
+                <p>
+                    change the <code class="t">.cuda()</code> in
+                </p>
+                <div class="code-container">
+                    <pre tabindex="0" class="copy-code">
+self.model = (
+    build_sam3_video_model(...)
+    <span class="t">.cuda() 
+)</span></pre>
+                </div>
+                <p>
+                    to
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+                        .to(self.device)</code>
+                </div>
+                <p>
+                    so the stuff with .device too
+                </p>
+                <div class="code-container">
+                    <pre tabindex="0" class="copy-code">
+self.model = (
+    build_sam3_video_model(...)
+    .to(self.device)                       )</pre>
+                </div>
+
+
+
+            </div>
+        </div>
 
 
 
