@@ -11,12 +11,13 @@
             <div class="step-txt ">
                 <h4><span class="r">MAD </span>problems</h4>
                 <p>
-                  I encountered alot of problems b/c of using mac, i had to change code.config security to weak and
-                  alter the edt.py file like this below,
+                    I encountered alot of problems b/c of using mac, i had to change code.config security to weak and
+                    alter the edt.py file like this below,
                 </p>
-                <p class="t">I changed security back to </p> <code>normal</code> <span class="t">but keep this in mind</span>
+                <p class="t">I changed security back to </p> <code>normal</code> <span class="t">but keep this in
+                    mind</span>
                 <p>
-                    This was do to the use of 
+                    This was do to the use of
                 </p>
                 <div class="code-container">
                     <code tabindex="0" class="copy-code">
@@ -36,12 +37,11 @@ comfyui-easy-sam3</code>
             </div>
 
         </div>
-        <div tabindex="0" class="step-float" data-video="" 
-            data-timestamp="">
-            
-            <div  class="step-txt ">
+        <div tabindex="0" class="step-float" data-video="" data-timestamp="">
+
+            <div class="step-txt ">
                 <h4>edt.py</h4>
-            
+
                 <div class="code-container">
                     <pre tabindex="0" class="copy-code">
 # Copyright (c) Meta Platforms, Inc. and affiliates. All Rights Reserved
@@ -242,8 +242,1143 @@ def edt_triton(data: torch.Tensor):
                 </div>
             </div>
         </div>
-   
-        
-   
+        <div tabindex="0" class="step-float" data-video="" data-timestamp="">
+            <h4>3 - new errors with cuda</h4>
+            <div class="step-img">
+                <img loading="lazy" src="images/03.png" alt="">
+            </div>
+
+            <div class="step-txt ">
+                <h4></h4>
+                <p>
+                    Since i'm not using nividia, python script are all messed, first error today we're attempting to fix
+                    is
+                    is in
+                    <code tabindex="0" class="copy-code">
+                        ComfyUI/custom_nodes/comfyui-easy-sam3/sam3/model/position_encoding.py  </code>
+
+
+                </p>
+                <p>
+                    changing line 46 from this
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code t">
+                        <pre>
+            for size in precompute_sizes:
+                tensors = torch.zeros((1, 1) + size, device="cuda")
+                self.forward(tensors)
+                # further clone and detach it in the cache (just to be safe)
+                self.cache[size] = self.cache[size].clone().detach()
+                        </pre>
+                    </code>
+                </div>
+                <p>
+                    to this
+                </p>
+                <div class="code-container">
+                    <pre tabindex="0" class="copy-code">
+# Select the best available device.
+if torch.cuda.is_available():
+    device = "cuda"
+elif torch.backends.mps.is_available():
+    device = "mps"
+else:
+    device = "cpu"
+
+for size in precompute_sizes:
+    tensors = torch.zeros((1, 1) + size, device=device)
+    self.forward(tensors)
+    # further clone and detach it in the cache (just to be safe)
+    self.cache[size] = self.cache[size].clone().detach()</pre>
+                </div>
+            </div>
+            <div class="code-container">
+                <pre tabindex="0" class="copy-code">
+# Copyright (c) Meta Platforms, Inc. and affiliates. All Rights Reserved
+
+import math
+from typing import Optional
+
+import torch
+from torch import nn
+
+
+class PositionEmbeddingSine(nn.Module):
+    """
+    This is a more standard version of the position embedding, very similar to the one
+    used by the Attention is all you need paper, generalized to work on images.
+    """
+
+    def __init__(
+        self,
+        num_pos_feats,
+        temperature: int = 10000,
+        normalize: bool = True,
+        scale: Optional[float] = None,
+        precompute_resolution: Optional[int] = None,
+    ):
+        super().__init__()
+        assert num_pos_feats % 2 == 0, "Expecting even model width"
+        self.num_pos_feats = num_pos_feats // 2
+        self.temperature = temperature
+        self.normalize = normalize
+        if scale is not None and normalize is False:
+            raise ValueError("normalize should be True if scale is passed")
+        if scale is None:
+            scale = 2 * math.pi
+        self.scale = scale
+
+        self.cache = {}
+        # Precompute positional encodings under `precompute_resolution` to fill the cache
+        # and avoid symbolic shape tracing errors in torch.compile in PyTorch 2.4 nightly.
+        if precompute_resolution is not None:
+            # We precompute pos enc for stride 4, 8, 16 and 32 to fill `self.cache`.
+            precompute_sizes = [
+                (precompute_resolution // 4, precompute_resolution // 4),
+                (precompute_resolution // 8, precompute_resolution // 8),
+                (precompute_resolution // 16, precompute_resolution // 16),
+                (precompute_resolution // 32, precompute_resolution // 32),
+            ]
+            # Select the best available device.
+            if torch.cuda.is_available():
+                device = "cuda"
+            elif torch.backends.mps.is_available():
+                device = "mps"
+            else:
+                device = "cpu"
+
+            for size in precompute_sizes:
+                tensors = torch.zeros((1, 1) + size, device=device)
+                self.forward(tensors)
+                # further clone and detach it in the cache (just to be safe)
+                self.cache[size] = self.cache[size].clone().detach()
+
+    def _encode_xy(self, x, y):
+        # The positions are expected to be normalized
+        assert len(x) == len(y) and x.ndim == y.ndim == 1
+        x_embed = x * self.scale
+        y_embed = y * self.scale
+
+        dim_t = torch.arange(self.num_pos_feats, dtype=torch.float32, device=x.device)
+        dim_t = self.temperature ** (2 * (dim_t // 2) / self.num_pos_feats)
+
+        pos_x = x_embed[:, None] / dim_t
+        pos_y = y_embed[:, None] / dim_t
+        pos_x = torch.stack(
+            (pos_x[:, 0::2].sin(), pos_x[:, 1::2].cos()), dim=2
+        ).flatten(1)
+        pos_y = torch.stack(
+            (pos_y[:, 0::2].sin(), pos_y[:, 1::2].cos()), dim=2
+        ).flatten(1)
+        return pos_x, pos_y
+
+    @torch.no_grad()
+    def encode_boxes(self, x, y, w, h):
+        pos_x, pos_y = self._encode_xy(x, y)
+        pos = torch.cat((pos_y, pos_x, h[:, None], w[:, None]), dim=1)
+        return pos
+
+    encode = encode_boxes  # Backwards compatibility
+
+    @torch.no_grad()
+    def encode_points(self, x, y, labels):
+        (bx, nx), (by, ny), (bl, nl) = x.shape, y.shape, labels.shape
+        assert bx == by and nx == ny and bx == bl and nx == nl
+        pos_x, pos_y = self._encode_xy(x.flatten(), y.flatten())
+        pos_x, pos_y = pos_x.reshape(bx, nx, -1), pos_y.reshape(by, ny, -1)
+        pos = torch.cat((pos_y, pos_x, labels[:, :, None]), dim=2)
+        return pos
+
+    @torch.no_grad()
+    def forward(self, x):
+        cache_key = None
+        cache_key = (x.shape[-2], x.shape[-1])
+        if cache_key in self.cache:
+            return self.cache[cache_key][None].repeat(x.shape[0], 1, 1, 1)
+        y_embed = (
+            torch.arange(1, x.shape[-2] + 1, dtype=torch.float32, device=x.device)
+            .view(1, -1, 1)
+            .repeat(x.shape[0], 1, x.shape[-1])
+        )
+        x_embed = (
+            torch.arange(1, x.shape[-1] + 1, dtype=torch.float32, device=x.device)
+            .view(1, 1, -1)
+            .repeat(x.shape[0], x.shape[-2], 1)
+        )
+
+        if self.normalize:
+            eps = 1e-6
+            y_embed = y_embed / (y_embed[:, -1:, :] + eps) * self.scale
+            x_embed = x_embed / (x_embed[:, :, -1:] + eps) * self.scale
+
+        dim_t = torch.arange(self.num_pos_feats, dtype=torch.float32, device=x.device)
+        dim_t = self.temperature ** (2 * (dim_t // 2) / self.num_pos_feats)
+
+        pos_x = x_embed[:, :, :, None] / dim_t
+        pos_y = y_embed[:, :, :, None] / dim_t
+        pos_x = torch.stack(
+            (pos_x[:, :, :, 0::2].sin(), pos_x[:, :, :, 1::2].cos()), dim=4
+        ).flatten(3)
+        pos_y = torch.stack(
+            (pos_y[:, :, :, 0::2].sin(), pos_y[:, :, :, 1::2].cos()), dim=4
+        ).flatten(3)
+        pos = torch.cat((pos_y, pos_x), dim=3).permute(0, 3, 1, 2)
+        if cache_key is not None:
+            self.cache[cache_key] = pos[0]
+        return pos
+</pre>
+            </div>
+
+        </div>
+        <div tabindex="0" class="step-float" data-video="" data-timestamp="">
+            <h4>4. Promblem is with 'Cuda</h4>
+            <div class="step-img">
+                <img loading="lazy" src="images/04.png" alt="">
+            </div>
+
+            <div class="step-txt ">
+                <p>
+                    Now, chatgpt says go to ComfyUI/custom_nodes/comfyui-easy-sam3/sam3/model_builder.py
+                </p>
+                <p>
+                    i also did a find all a changed it here
+                </p>
+                <h5>full model_builder.py</h5>
+                <div class="code-container">
+                    <pre tabindex="0" class="copy-code">
+# Copyright (c) Meta Platforms, Inc. and affiliates. All Rights Reserved
+
+import os
+from typing import Optional
+
+import torch
+import torch.nn as nn
+from huggingface_hub import hf_hub_download
+from iopath.common.file_io import g_pathmgr
+from .model.decoder import (
+    TransformerDecoder,
+    TransformerDecoderLayer,
+    TransformerDecoderLayerv2,
+    TransformerEncoderCrossAttention,
+)
+from .model.encoder import TransformerEncoderFusion, TransformerEncoderLayer
+from .model.geometry_encoders import SequenceGeometryEncoder
+from .model.maskformer_segmentation import PixelDecoder, UniversalSegmentationHead
+from .model.memory import (
+    CXBlock,
+    SimpleFuser,
+    SimpleMaskDownSampler,
+    SimpleMaskEncoder,
+)
+from .model.model_misc import (
+    DotProductScoring,
+    MLP,
+    MultiheadAttentionWrapper as MultiheadAttention,
+    TransformerWrapper,
+)
+from .model.necks import Sam3DualViTDetNeck
+from .model.position_encoding import PositionEmbeddingSine
+from .model.sam1_task_predictor import SAM3InteractiveImagePredictor
+from .model.sam3_image import Sam3Image, Sam3ImageOnVideoMultiGPU
+from .model.sam3_tracking_predictor import Sam3TrackerPredictor
+from .model.sam3_video_inference import Sam3VideoInferenceWithInstanceInteractivity
+from .model.sam3_video_predictor import Sam3VideoPredictor, Sam3VideoPredictorMultiGPU
+from .model.text_encoder_ve import VETextEncoder
+from .model.tokenizer_ve import SimpleTokenizer
+from .model.vitdet import ViT
+from .model.vl_combiner import SAM3VLBackbone
+from .sam.transformer import RoPEAttention
+
+
+# Setup TensorFloat-32 for Ampere GPUs if available
+def _setup_tf32() -> None:
+    """Enable TensorFloat-32 for Ampere GPUs if available."""
+    if torch.cuda.is_available():
+        device_props = torch.cuda.get_device_properties(0)
+        if device_props.major >= 8:
+            torch.backends.cuda.matmul.allow_tf32 = True
+            torch.backends.cudnn.allow_tf32 = True
+
+
+_setup_tf32()
+
+
+def _create_position_encoding(precompute_resolution=None):
+    """Create position encoding for visual backbone."""
+    return PositionEmbeddingSine(
+        num_pos_feats=256,
+        normalize=True,
+        scale=None,
+        temperature=10000,
+        precompute_resolution=precompute_resolution,
+    )
+
+
+def _create_vit_backbone(compile_mode=None):
+    """Create ViT backbone for visual feature extraction."""
+    return ViT(
+        img_size=1008,
+        pretrain_img_size=336,
+        patch_size=14,
+        embed_dim=1024,
+        depth=32,
+        num_heads=16,
+        mlp_ratio=4.625,
+        norm_layer="LayerNorm",
+        drop_path_rate=0.1,
+        qkv_bias=True,
+        use_abs_pos=True,
+        tile_abs_pos=True,
+        global_att_blocks=(7, 15, 23, 31),
+        rel_pos_blocks=(),
+        use_rope=True,
+        use_interp_rope=True,
+        window_size=24,
+        pretrain_use_cls_token=True,
+        retain_cls_token=False,
+        ln_pre=True,
+        ln_post=False,
+        return_interm_layers=False,
+        bias_patch_embed=False,
+        compile_mode=compile_mode,
+    )
+
+
+def _create_vit_neck(position_encoding, vit_backbone, enable_inst_interactivity=False):
+    """Create ViT neck for feature pyramid."""
+    return Sam3DualViTDetNeck(
+        position_encoding=position_encoding,
+        d_model=256,
+        scale_factors=[4.0, 2.0, 1.0, 0.5],
+        trunk=vit_backbone,
+        add_sam2_neck=enable_inst_interactivity,
+    )
+
+
+def _create_vl_backbone(vit_neck, text_encoder):
+    """Create visual-language backbone."""
+    return SAM3VLBackbone(visual=vit_neck, text=text_encoder, scalp=1)
+
+
+def _create_transformer_encoder() -> TransformerEncoderFusion:
+    """Create transformer encoder with its layer."""
+    encoder_layer = TransformerEncoderLayer(
+        activation="relu",
+        d_model=256,
+        dim_feedforward=2048,
+        dropout=0.1,
+        pos_enc_at_attn=True,
+        pos_enc_at_cross_attn_keys=False,
+        pos_enc_at_cross_attn_queries=False,
+        pre_norm=True,
+        self_attention=MultiheadAttention(
+            num_heads=8,
+            dropout=0.1,
+            embed_dim=256,
+            batch_first=True,
+        ),
+        cross_attention=MultiheadAttention(
+            num_heads=8,
+            dropout=0.1,
+            embed_dim=256,
+            batch_first=True,
+        ),
+    )
+
+    encoder = TransformerEncoderFusion(
+        layer=encoder_layer,
+        num_layers=6,
+        d_model=256,
+        num_feature_levels=1,
+        frozen=False,
+        use_act_checkpoint=True,
+        add_pooled_text_to_img_feat=False,
+        pool_text_with_mask=True,
+    )
+    return encoder
+
+
+def _create_transformer_decoder() -> TransformerDecoder:
+    """Create transformer decoder with its layer."""
+    decoder_layer = TransformerDecoderLayer(
+        activation="relu",
+        d_model=256,
+        dim_feedforward=2048,
+        dropout=0.1,
+        cross_attention=MultiheadAttention(
+            num_heads=8,
+            dropout=0.1,
+            embed_dim=256,
+        ),
+        n_heads=8,
+        use_text_cross_attention=True,
+    )
+
+    decoder = TransformerDecoder(
+        layer=decoder_layer,
+        num_layers=6,
+        num_queries=200,
+        return_intermediate=True,
+        box_refine=True,
+        num_o2m_queries=0,
+        dac=True,
+        boxRPB="log",
+        d_model=256,
+        frozen=False,
+        interaction_layer=None,
+        dac_use_selfatt_ln=True,
+        resolution=1008,
+        stride=14,
+        use_act_checkpoint=True,
+        presence_token=True,
+    )
+    return decoder
+
+
+def _create_dot_product_scoring():
+    """Create dot product scoring module."""
+    prompt_mlp = MLP(
+        input_dim=256,
+        hidden_dim=2048,
+        output_dim=256,
+        num_layers=2,
+        dropout=0.1,
+        residual=True,
+        out_norm=nn.LayerNorm(256),
+    )
+    return DotProductScoring(d_model=256, d_proj=256, prompt_mlp=prompt_mlp)
+
+
+def _create_segmentation_head(compile_mode=None):
+    """Create segmentation head with pixel decoder."""
+    pixel_decoder = PixelDecoder(
+        num_upsampling_stages=3,
+        interpolation_mode="nearest",
+        hidden_dim=256,
+        compile_mode=compile_mode,
+    )
+
+    cross_attend_prompt = MultiheadAttention(
+        num_heads=8,
+        dropout=0,
+        embed_dim=256,
+    )
+
+    segmentation_head = UniversalSegmentationHead(
+        hidden_dim=256,
+        upsampling_stages=3,
+        aux_masks=False,
+        presence_head=False,
+        dot_product_scorer=None,
+        act_ckpt=True,
+        cross_attend_prompt=cross_attend_prompt,
+        pixel_decoder=pixel_decoder,
+    )
+    return segmentation_head
+
+
+def _create_geometry_encoder():
+    """Create geometry encoder with all its components."""
+    # Create position encoding for geometry encoder
+    geo_pos_enc = _create_position_encoding()
+    # Create CX block for fuser
+    cx_block = CXBlock(
+        dim=256,
+        kernel_size=7,
+        padding=3,
+        layer_scale_init_value=1.0e-06,
+        use_dwconv=True,
+    )
+    # Create geometry encoder layer
+    geo_layer = TransformerEncoderLayer(
+        activation="relu",
+        d_model=256,
+        dim_feedforward=2048,
+        dropout=0.1,
+        pos_enc_at_attn=False,
+        pre_norm=True,
+        self_attention=MultiheadAttention(
+            num_heads=8,
+            dropout=0.1,
+            embed_dim=256,
+            batch_first=False,
+        ),
+        pos_enc_at_cross_attn_queries=False,
+        pos_enc_at_cross_attn_keys=True,
+        cross_attention=MultiheadAttention(
+            num_heads=8,
+            dropout=0.1,
+            embed_dim=256,
+            batch_first=False,
+        ),
+    )
+
+    # Create geometry encoder
+    input_geometry_encoder = SequenceGeometryEncoder(
+        pos_enc=geo_pos_enc,
+        encode_boxes_as_points=False,
+        points_direct_project=True,
+        points_pool=True,
+        points_pos_enc=True,
+        boxes_direct_project=True,
+        boxes_pool=True,
+        boxes_pos_enc=True,
+        d_model=256,
+        num_layers=3,
+        layer=geo_layer,
+        use_act_ckpt=True,
+        add_cls=True,
+        add_post_encode_proj=True,
+    )
+    return input_geometry_encoder
+
+
+def _create_sam3_model(
+    backbone,
+    transformer,
+    input_geometry_encoder,
+    segmentation_head,
+    dot_prod_scoring,
+    inst_interactive_predictor,
+    eval_mode,
+):
+    """Create the SAM3 image model."""
+    common_params = {
+        "backbone": backbone,
+        "transformer": transformer,
+        "input_geometry_encoder": input_geometry_encoder,
+        "segmentation_head": segmentation_head,
+        "num_feature_levels": 1,
+        "o2m_mask_predict": True,
+        "dot_prod_scoring": dot_prod_scoring,
+        "use_instance_query": False,
+        "multimask_output": True,
+        "inst_interactive_predictor": inst_interactive_predictor,
+    }
+
+    matcher = None
+    common_params["matcher"] = matcher
+    model = Sam3Image(**common_params)
+
+    return model
+
+
+def _create_tracker_maskmem_backbone():
+    """Create the SAM3 Tracker memory encoder."""
+    # Position encoding for mask memory backbone
+    position_encoding = PositionEmbeddingSine(
+        num_pos_feats=64,
+        normalize=True,
+        scale=None,
+        temperature=10000,
+        precompute_resolution=1008,
+    )
+
+    # Mask processing components
+    mask_downsampler = SimpleMaskDownSampler(
+        kernel_size=3, stride=2, padding=1, interpol_size=[1152, 1152]
+    )
+
+    cx_block_layer = CXBlock(
+        dim=256,
+        kernel_size=7,
+        padding=3,
+        layer_scale_init_value=1.0e-06,
+        use_dwconv=True,
+    )
+
+    fuser = SimpleFuser(layer=cx_block_layer, num_layers=2)
+
+    maskmem_backbone = SimpleMaskEncoder(
+        out_dim=64,
+        position_encoding=position_encoding,
+        mask_downsampler=mask_downsampler,
+        fuser=fuser,
+    )
+
+    return maskmem_backbone
+
+
+def _create_tracker_transformer():
+    """Create the SAM3 Tracker transformer components."""
+    # Self attention
+    self_attention = RoPEAttention(
+        embedding_dim=256,
+        num_heads=1,
+        downsample_rate=1,
+        dropout=0.1,
+        rope_theta=10000.0,
+        feat_sizes=[72, 72],
+        use_fa3=False,
+        use_rope_real=False,
+    )
+
+    # Cross attention
+    cross_attention = RoPEAttention(
+        embedding_dim=256,
+        num_heads=1,
+        downsample_rate=1,
+        dropout=0.1,
+        kv_in_dim=64,
+        rope_theta=10000.0,
+        feat_sizes=[72, 72],
+        rope_k_repeat=True,
+        use_fa3=False,
+        use_rope_real=False,
+    )
+
+    # Encoder layer
+    encoder_layer = TransformerDecoderLayerv2(
+        cross_attention_first=False,
+        activation="relu",
+        dim_feedforward=2048,
+        dropout=0.1,
+        pos_enc_at_attn=False,
+        pre_norm=True,
+        self_attention=self_attention,
+        d_model=256,
+        pos_enc_at_cross_attn_keys=True,
+        pos_enc_at_cross_attn_queries=False,
+        cross_attention=cross_attention,
+    )
+
+    # Encoder
+    encoder = TransformerEncoderCrossAttention(
+        remove_cross_attention_layers=[],
+        batch_first=True,
+        d_model=256,
+        frozen=False,
+        pos_enc_at_input=True,
+        layer=encoder_layer,
+        num_layers=4,
+        use_act_checkpoint=False,
+    )
+
+    # Transformer wrapper
+    transformer = TransformerWrapper(
+        encoder=encoder,
+        decoder=None,
+        d_model=256,
+    )
+
+    return transformer
+
+
+def build_tracker(
+    apply_temporal_disambiguation: bool, with_backbone: bool = False, compile_mode=None
+) -> Sam3TrackerPredictor:
+    """
+    Build the SAM3 Tracker module for video tracking.
+
+    Returns:
+        Sam3TrackerPredictor: Wrapped SAM3 Tracker module
+    """
+
+    # Create model components
+    maskmem_backbone = _create_tracker_maskmem_backbone()
+    transformer = _create_tracker_transformer()
+    backbone = None
+    if with_backbone:
+        vision_backbone = _create_vision_backbone(compile_mode=compile_mode)
+        backbone = SAM3VLBackbone(scalp=1, visual=vision_backbone, text=None)
+    # Create the Tracker module
+    model = Sam3TrackerPredictor(
+        image_size=1008,
+        num_maskmem=7,
+        backbone=backbone,
+        backbone_stride=14,
+        transformer=transformer,
+        maskmem_backbone=maskmem_backbone,
+        # SAM parameters
+        multimask_output_in_sam=True,
+        # Evaluation
+        forward_backbone_per_frame_for_eval=True,
+        trim_past_non_cond_mem_for_eval=False,
+        # Multimask
+        multimask_output_for_tracking=True,
+        multimask_min_pt_num=0,
+        multimask_max_pt_num=1,
+        # Additional settings
+        always_start_from_first_ann_frame=False,
+        # Mask overlap
+        non_overlap_masks_for_mem_enc=False,
+        non_overlap_masks_for_output=False,
+        max_cond_frames_in_attn=4,
+        offload_output_to_cpu_for_eval=False,
+        # SAM decoder settings
+        sam_mask_decoder_extra_args={
+            "dynamic_multimask_via_stability": True,
+            "dynamic_multimask_stability_delta": 0.05,
+            "dynamic_multimask_stability_thresh": 0.98,
+        },
+        clear_non_cond_mem_around_input=True,
+        fill_hole_area=0,
+        use_memory_selection=apply_temporal_disambiguation,
+    )
+
+    return model
+
+
+def _create_text_encoder(bpe_path: str) -> VETextEncoder:
+    """Create SAM3 text encoder."""
+    tokenizer = SimpleTokenizer(bpe_path=bpe_path)
+    return VETextEncoder(
+        tokenizer=tokenizer,
+        d_model=256,
+        width=1024,
+        heads=16,
+        layers=24,
+    )
+
+
+def _create_vision_backbone(
+    compile_mode=None, enable_inst_interactivity=True
+) -> Sam3DualViTDetNeck:
+    """Create SAM3 visual backbone with ViT and neck."""
+    # Position encoding
+    position_encoding = _create_position_encoding(precompute_resolution=1008)
+    # ViT backbone
+    vit_backbone: ViT = _create_vit_backbone(compile_mode=compile_mode)
+    vit_neck: Sam3DualViTDetNeck = _create_vit_neck(
+        position_encoding,
+        vit_backbone,
+        enable_inst_interactivity=enable_inst_interactivity,
+    )
+    # Visual neck
+    return vit_neck
+
+
+def _create_sam3_transformer(has_presence_token: bool = True) -> TransformerWrapper:
+    """Create SAM3 transformer encoder and decoder."""
+    encoder: TransformerEncoderFusion = _create_transformer_encoder()
+    decoder: TransformerDecoder = _create_transformer_decoder()
+
+    return TransformerWrapper(encoder=encoder, decoder=decoder, d_model=256)
+
+
+def _load_checkpoint(model, checkpoint_path):
+    """Load model checkpoint from file."""
+    if checkpoint_path.endswith(".safetensors"):
+        from safetensors.torch import load_file
+        ckpt = load_file(checkpoint_path)
+    else:
+        with g_pathmgr.open(checkpoint_path, "rb") as f:
+            ckpt = torch.load(f, map_location="cpu", weights_only=True)
+    if "model" in ckpt and isinstance(ckpt["model"], dict):
+        ckpt = ckpt["model"]
+
+    sam3_image_ckpt = {
+        k.replace("detector.", ""): v for k, v in ckpt.items() if "detector" in k
+    }
+    if model.inst_interactive_predictor is not None:
+        sam3_image_ckpt.update(
+            {
+                k.replace("tracker.", "inst_interactive_predictor.model."): v
+                for k, v in ckpt.items()
+                if "tracker" in k
+            }
+        )
+    missing_keys, _ = model.load_state_dict(sam3_image_ckpt, strict=False)
+    # if len(missing_keys) > 0:
+    #     print(
+    #         f"loaded {checkpoint_path} and found "
+    #         f"missing and/or unexpected keys:\n{missing_keys=}"
+    #     )
+
+
+def _setup_device_and_mode(model, device, eval_mode):
+    """Setup model device and evaluation mode."""
+    if device == "cuda":
+        model = model.cuda()
+    if eval_mode:
+        model.eval()
+    return model
+
+
+def build_sam3_image_model(
+    bpe_path=None,
+    device=(
+        "cuda"
+        if torch.cuda.is_available()
+        else "mps"
+        if torch.backends.mps.is_available()
+        else "cpu"
+    ),    
+    eval_mode=True,
+    checkpoint_path=None,
+    load_from_HF=True,
+    enable_segmentation=True,
+    enable_inst_interactivity=False,
+    compile=False,
+):
+    """
+    Build SAM3 image model
+
+    Args:
+        bpe_path: Path to the BPE tokenizer vocabulary
+        device: Device to load the model on ('cuda' or 'cpu')
+        eval_mode: Whether to set the model to evaluation mode
+        checkpoint_path: Optional path to model checkpoint
+        enable_segmentation: Whether to enable segmentation head
+        enable_inst_interactivity: Whether to enable instance interactivity (SAM 1 task)
+        compile_mode: To enable compilation, set to "default"
+
+    Returns:
+        A SAM3 image model
+    """
+    if bpe_path is None:
+        bpe_path = os.path.join(
+            os.path.dirname(__file__), "..", "assets", "bpe_simple_vocab_16e6.txt.gz"
+        )
+    # Create visual components
+    compile_mode = "default" if compile else None
+    vision_encoder = _create_vision_backbone(
+        compile_mode=compile_mode, enable_inst_interactivity=enable_inst_interactivity
+    )
+
+    # Create text components
+    text_encoder = _create_text_encoder(bpe_path)
+
+    # Create visual-language backbone
+    backbone = _create_vl_backbone(vision_encoder, text_encoder)
+
+    # Create transformer components
+    transformer = _create_sam3_transformer()
+
+    # Create dot product scoring
+    dot_prod_scoring = _create_dot_product_scoring()
+
+    # Create segmentation head if enabled
+    segmentation_head = (
+        _create_segmentation_head(compile_mode=compile_mode)
+        if enable_segmentation
+        else None
+    )
+
+    # Create geometry encoder
+    input_geometry_encoder = _create_geometry_encoder()
+    if enable_inst_interactivity:
+        sam3_pvs_base = build_tracker(apply_temporal_disambiguation=False)
+        inst_predictor = SAM3InteractiveImagePredictor(sam3_pvs_base)
+    else:
+        inst_predictor = None
+    # Create the SAM3 model
+    model = _create_sam3_model(
+        backbone,
+        transformer,
+        input_geometry_encoder,
+        segmentation_head,
+        dot_prod_scoring,
+        inst_predictor,
+        eval_mode,
+    )
+    if load_from_HF and checkpoint_path is None:
+        checkpoint_path = download_ckpt_from_hf()
+    # Load checkpoint if provided
+    if checkpoint_path is not None:
+        _load_checkpoint(model, checkpoint_path)
+
+    # Setup device and mode
+    model = _setup_device_and_mode(model, device, eval_mode)
+
+    return model
+
+
+def download_ckpt_from_hf():
+    SAM3_MODEL_ID = "facebook/sam3"
+    SAM3_CKPT_NAME = "sam3.pt"
+    SAM3_CFG_NAME = "config.json"
+    _ = hf_hub_download(repo_id=SAM3_MODEL_ID, filename=SAM3_CFG_NAME)
+    checkpoint_path = hf_hub_download(repo_id=SAM3_MODEL_ID, filename=SAM3_CKPT_NAME)
+    return checkpoint_path
+
+
+def build_sam3_video_model(
+    checkpoint_path: Optional[str] = None,
+    load_from_HF=True,
+    bpe_path: Optional[str] = None,
+    has_presence_token: bool = True,
+    geo_encoder_use_img_cross_attn: bool = True,
+    strict_state_dict_loading: bool = False,
+    apply_temporal_disambiguation: bool = True,
+    device=(
+        "cuda"
+        if torch.cuda.is_available()
+        else "mps"
+        if torch.backends.mps.is_available()
+        else "cpu"
+    ),
+    compile=False,
+) -> Sam3VideoInferenceWithInstanceInteractivity:
+    """
+    Build SAM3 dense tracking model.
+
+    Args:
+        checkpoint_path: Optional path to checkpoint file
+        bpe_path: Path to the BPE tokenizer file
+
+    Returns:
+        Sam3VideoInferenceWithInstanceInteractivity: The instantiated dense tracking model
+    """
+    if bpe_path is None:
+        bpe_path = os.path.join(
+            os.path.dirname(__file__), "..", "assets", "bpe_simple_vocab_16e6.txt.gz"
+        )
+
+    # Build Tracker module
+    tracker = build_tracker(apply_temporal_disambiguation=apply_temporal_disambiguation)
+
+    # Build Detector components
+    visual_neck = _create_vision_backbone()
+    text_encoder = _create_text_encoder(bpe_path)
+    backbone = SAM3VLBackbone(scalp=1, visual=visual_neck, text=text_encoder)
+    transformer = _create_sam3_transformer(has_presence_token=has_presence_token)
+    segmentation_head: UniversalSegmentationHead = _create_segmentation_head()
+    input_geometry_encoder = _create_geometry_encoder()
+
+    # Create main dot product scoring
+    main_dot_prod_mlp = MLP(
+        input_dim=256,
+        hidden_dim=2048,
+        output_dim=256,
+        num_layers=2,
+        dropout=0.1,
+        residual=True,
+        out_norm=nn.LayerNorm(256),
+    )
+    main_dot_prod_scoring = DotProductScoring(
+        d_model=256, d_proj=256, prompt_mlp=main_dot_prod_mlp
+    )
+
+    # Build Detector module
+    detector = Sam3ImageOnVideoMultiGPU(
+        num_feature_levels=1,
+        backbone=backbone,
+        transformer=transformer,
+        segmentation_head=segmentation_head,
+        semantic_segmentation_head=None,
+        input_geometry_encoder=input_geometry_encoder,
+        use_early_fusion=True,
+        use_dot_prod_scoring=True,
+        dot_prod_scoring=main_dot_prod_scoring,
+        supervise_joint_box_scores=has_presence_token,
+    )
+
+    # Build the main SAM3 video model
+    if apply_temporal_disambiguation:
+        model = Sam3VideoInferenceWithInstanceInteractivity(
+            detector=detector,
+            tracker=tracker,
+            score_threshold_detection=0.5,
+            assoc_iou_thresh=0.1,
+            det_nms_thresh=0.1,
+            new_det_thresh=0.7,
+            hotstart_delay=15,
+            hotstart_unmatch_thresh=8,
+            hotstart_dup_thresh=8,
+            suppress_unmatched_only_within_hotstart=True,
+            min_trk_keep_alive=-1,
+            max_trk_keep_alive=30,
+            init_trk_keep_alive=30,
+            suppress_overlapping_based_on_recent_occlusion_threshold=0.7,
+            suppress_det_close_to_boundary=False,
+            fill_hole_area=16,
+            recondition_every_nth_frame=16,
+            masklet_confirmation_enable=False,
+            decrease_trk_keep_alive_for_empty_masklets=False,
+            image_size=1008,
+            image_mean=(0.5, 0.5, 0.5),
+            image_std=(0.5, 0.5, 0.5),
+            compile_model=compile,
+        )
+    else:
+        # a version without any heuristics for ablation studies
+        model = Sam3VideoInferenceWithInstanceInteractivity(
+            detector=detector,
+            tracker=tracker,
+            score_threshold_detection=0.5,
+            assoc_iou_thresh=0.1,
+            det_nms_thresh=0.1,
+            new_det_thresh=0.7,
+            hotstart_delay=0,
+            hotstart_unmatch_thresh=0,
+            hotstart_dup_thresh=0,
+            suppress_unmatched_only_within_hotstart=True,
+            min_trk_keep_alive=-1,
+            max_trk_keep_alive=30,
+            init_trk_keep_alive=30,
+            suppress_overlapping_based_on_recent_occlusion_threshold=0.7,
+            suppress_det_close_to_boundary=False,
+            fill_hole_area=16,
+            recondition_every_nth_frame=0,
+            masklet_confirmation_enable=False,
+            decrease_trk_keep_alive_for_empty_masklets=False,
+            image_size=1008,
+            image_mean=(0.5, 0.5, 0.5),
+            image_std=(0.5, 0.5, 0.5),
+            compile_model=compile,
+        )
+
+    # Load checkpoint if provided
+    if load_from_HF and checkpoint_path is None:
+        checkpoint_path = download_ckpt_from_hf()
+    if checkpoint_path is not None:
+        if checkpoint_path.endswith(".safetensors"):
+            from safetensors.torch import load_file
+            ckpt = load_file(checkpoint_path)
+        else:
+            with g_pathmgr.open(checkpoint_path, "rb") as f:
+                ckpt = torch.load(f, map_location="cpu", weights_only=True)
+        if "model" in ckpt and isinstance(ckpt["model"], dict):
+            ckpt = ckpt["model"]
+
+        missing_keys, unexpected_keys = model.load_state_dict(
+            ckpt, strict=False
+        )
+        # if missing_keys:
+        #     print(f"Missing keys: {missing_keys}")
+        if unexpected_keys:
+            print(f"Unexpected keys: {unexpected_keys}")
+
+    model.to(device=device)
+    return model
+
+
+def build_sam3_video_predictor(*model_args, gpus_to_use=None, **model_kwargs):
+    if gpus_to_use is not None:
+        return Sam3VideoPredictorMultiGPU(
+            *model_args, gpus_to_use=gpus_to_use, **model_kwargs
+        )
+    else:
+        return Sam3VideoPredictor(
+            *model_args, **model_kwargs
+        )
+                    </pre>
+                </div>
+            </div>
+            <div class="imgs-containe">
+                <div class="step-img">
+                    <img loading="lazy" src="images/04-b.png" alt="">
+                </div>
+
+            </div>
+        </div>
+        <div tabindex="0" class="step-float" data-video="" data-timestamp="">
+            <h4 class="r">5 DO NOT USE <code>fp8</code> models!!</h4>
+            <div class="step-img">
+                <img loading="lazy" src="images/05.png" alt="">
+            </div>
+
+            <div class="step-txt ">
+                <p>
+                    THEY DO NOT WORK on mac, use <code>bf16</code> or <code>fp16</code>
+                </p>
+                <p>
+                    MAC WANT <code class="g"><code>bf16</code></code>
+                </p>
+                <p>
+                    Install the text_encoder,
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+                    umt5-xxl-enc-bf16.safetensors</code>
+                </div>
+                <p>
+                    change device on sam3 device to MPS,
+                </p>
+                <p>
+                    there will be erros because we have to change any <code class="m">cuda()</code>
+                    in the python scripts
+                </p>
+            </div>
+        </div>
+        <div tabindex="0" class="step-float" data-video="" data-timestamp="">
+            <h4 class="r">6 change cuda() to...</h4>
+            <div class="step-img">
+                <img loading="lazy" src="images/05.png" alt="">
+            </div>
+
+            <div class="step-txt ">
+                <p>go to /Users/tt/ComfyUI/custom_nodes/comfyui-easy-sam3/io_utils.py</p>
+                <p>
+                    change anything with <code class="t">cuda()</code>
+                </p>
+                <p>
+                    <span class="t">This won't work</span>
+                <p>
+                    go to next step to fix decoder
+                </p>
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+img_mean = img_mean.<span class="t">cuda()</span>
+</code>
+                </div>
+                <p>to</p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+img_mean = img_mean.<span class="m">to(device)</span></code>
+                </div>
+                <p>and</p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+img_std = img_std.<span class="t">cuda()</span></code>
+                </div>
+                <p>
+                    to
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+img_std = img_std.<span class="m">to(device)</span></code>
+                </div>
+
+
+
+
+
+            </div>
+        </div>
+        <div tabindex="0" class="step-float" data-video="" data-timestamp="">
+            <h4 class="r">7 sam3/model/decoder</h4>
+            <div class="step-img">
+                <img loading="lazy" src="images/05.png" alt="">
+            </div>
+
+            <div class="step-txt ">
+                <p>go to /Users/tt/ComfyUI/custom_nodes/comfyui-easy-sam3/sam3/model/decoder.py</p>
+                <p>
+                    find,
+                </p>
+                <div class="code-container">
+                    <pre tabindex="0" class="copy-code">
+coords_h, coords_w = self._get_coords(
+feat_size, feat_size, <span class="t">device="cuda"</span>)</pre>
+                </div>
+                <p>
+                    change <code class="t">device="cuda"</code> to
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code m">
+                                   device="cuda"</code>
+                </div>
+                <p>
+                    and at top of decoder add this,
+                </p>
+                <div class="code-container">
+                    <pre tabindex="0" class="copy-code">
+import torch
+
+SAM3_DEVICE = "mps" if torch.backends.mps.is_available() else "cuda" if torch.cuda.is_available() else "cpu"                        
+                    </pre>
+                </div>
+
+
+
+            </div>
+        </div>
+
+
+
     </div>
 </div>
