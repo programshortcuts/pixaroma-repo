@@ -1625,14 +1625,215 @@ else torch.device("cpu")                   )</pre>
             <h4>11 fix __init__.py</h4>
             <div class="step-txt ">
                 <p>
-                    find
+                    in sam3/__init__.py or sam3/model/sam3_video_predictor.py
+                </p>
+                <p>
+                    look for
                 </p>
                 <div class="code-container">
                     <code tabindex="0" class="copy-code">
                         torch.cuda.current_device()</code>
                 </div>
+                <p class="t">It's in sam3_video_predictor</p>
+
+                <p>
+                    open nano ~/ComfyUI/custom_nodes/comfyui-easy-sam3/sam3/model/io_utils.py
+                </p>
+                <p>Go around line 510-520.
+
+                    You should see something like:
+
+                </p>
+                <div class="code-container">
+                    <pre tabindex="0" class="copy-code">
+if gpu_device is None:
+    gpu_device = torch.device(
+    "cuda",
+    torch.cuda.current_device()
+    )</pre>
+                </div>
+                <p>or</p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+                        else torch.cuda.current_device()</code>
+                </div>
+                <p class="t">it is else torch.cuda.current_device()</p>
+                <p>
+                    If you added the DEVICE variable earlier, replace
+                <div class="code-container">
+                    <pre tabindex="0" class="copy-code r">
+gpu_id = (
+        gpu_device.index
+        if gpu_device is not None and gpu_device.index is not None
+        else torch.cuda.current_device()
+    )
+    if offload_video_to_cpu:
+        out_device = torch.device("cpu")
+    else:
+        out_device = torch.device("cuda") if gpu_device is None else gpu_device</pre>
+                </div>
+
+                <p>with</p>
+                <div class="code-container">
+                    <pre tabindex="0" class="copy-code">
+if gpu_device is not None and gpu_device.index is not None:
+    gpu_id = gpu_device.index
+else:
+    gpu_id = 0
+
+if offload_video_to_cpu:
+    out_device = torch.device("cpu")
+else:
+    out_device = DEVICE if gpu_device is None else gpu_device</pre>
+                </div>
+                <p>
+                    change
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+                        assert gpu_device is None or gpu_device.type == "cuda"</code>
+                </div>
+                <p>to</p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+                        assert gpu_device is None or gpu_device.type in ["cuda", "mps", "cpu"]</code>
+                </div>
+                <div class="code-container">
+                    <pre tabindex="0" class="copy-code">
+if not self.offload_video_to_cpu:    
+    img = img.cuda()</pre>
+                </div>
+                <p>to</p>
+                <div class="code-container">
+                    <pre tabindex="0" class="copy-code">
+if not self.offload_video_to_cpu:
+    img = img.to(DEVICE)</pre>
+                </div>
+                <h5>AHHH</h5>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+                                img = img.cuda()</code>
+                </div>
+                <p>
+                    to
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+                        img = img.to(DEVICE)</code>
+                </div>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+                        </code>
+                </div>
+
+
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+                        find ~/ComfyUI/custom_nodes/comfyui-easy-sam3 -name "__pycache__" -type d -exec rm -rf {} +</code>
+                </div>
             </div>
         </div>
+        <div tabindex="0" class="step-float" data-video="" data-timestamp="">
+            <h4>11?</h4>
+            <div class="step-txt ">
+                <p>
+                    go ~/ComfyUI/custom_nodes/comfyui-easy-sam3/sam3/model/sam3_video_predictor.py
+                </p>
+                <p>find</p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+                        _get_torch_and_gpu_properties</code>
+                </div>
+                <p>
+                    or
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+                                  current_device</code>
+                </div>
+                <p>or </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+                        f"GPU device: {torch.cuda.get_device_properties(torch.cuda.current_device())}"</code>
+                </div>
+                <p class="t">I SEE all 3</p>
+                <p>
+                    replace f"device above to
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+                        f"Device: {self.device}"</code>
+                </div>
+            </div>
+        </div>
+        <div tabindex="0" class="step-float" data-video="" data-timestamp="">
+            <h4>13?</h4>
+            <div class="step-txt ">
+                <p>
+                    open ~/ComfyUI/custom_nodes/comfyui-easy-sam3/sam3/model/geometry_encoders.py
+                </p>
+                <p>
+                    find
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+                        scale = scale.pin_memory().to(device=boxes_xyxy.device, non_blocking=True)</code>
+                </div>
+                <p>replace with</p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+                        scale = scale.to(device=boxes_xyxy.device)</code>
+                </div>
+                <p>
+                    clear cashe and restart
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+                        find ~/ComfyUI/custom_nodes/comfyui-easy-sam3 -name "__pycache__" -type d -exec rm -rf {} +</code>
+                </div>
+
+
+
+            </div>
+        </div>
+        <div tabindex="0" class="step-float" data-video="" data-timestamp="">
+            <h4>14</h4>
+            <div class="step-txt ">
+                <p>
+                    open /Users/tt/ComfyUI/custom_nodes/comfyui-easy-sam3/sam3/model/geometry_encoders.py
+                </p>
+                <p>
+                    replace
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+                        scale = scale.pin_memory().to(device=boxes_xyxy.device, non_blocking=True)</code>
+                </div>
+                <p>replace with</p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+                        scale = scale.to(device=boxes_xyxy.device)</code>
+                </div>
+                <p>
+                    clear cashe and restart
+                </p>
+                <div class="code-container">
+                    <code tabindex="0" class="copy-code">
+                        find ~/ComfyUI/custom_nodes/comfyui-easy-sam3 -name "__pycache__" -type d -exec rm -rf {} +</code>
+                </div>
+
+
+
+            </div>
+        </div>
+        <p>
+            go to chatgpt programshorctus account to
+        </p>
+        <div class="code-container">
+            <code tabindex="0" class="copy-code">
+                WanVideo Text Encoder Debug</code>
+        </div>
+        <p>question: i can't type anymore</p>
 
     </div>
 </div>
